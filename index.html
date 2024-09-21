@@ -65,7 +65,7 @@
             color: white;
             height: 5px;
             width: 100%;
-            transition: all 0.3s ease;
+            transition: height 0.3s ease;
             overflow: hidden;
             border-radius: 4px;
             margin-top: 5px;
@@ -75,13 +75,11 @@
             text-align: center;
         }
         .event:hover {
-            height: auto; /* Expands when hovered */
-            max-height: 50px; /* Scroll when too long */
+            height: 40px; /* Expands vertically only */
             overflow-y: auto;
-            padding: 5px;
-            white-space: normal; /* Allow multiline when expanded */
+            white-space: normal;
         }
-        .modal {
+        .modal, .edit-modal {
             display: none;
             position: fixed;
             left: 50%;
@@ -91,8 +89,9 @@
             padding: 20px;
             border: 1px solid #ccc;
             z-index: 1000;
+            width: 300px;
         }
-        .modal.active {
+        .modal.active, .edit-modal.active {
             display: block;
         }
         .overlay {
@@ -108,7 +107,7 @@
         .overlay.active {
             display: block;
         }
-        .modal input, .modal textarea {
+        .modal input, .modal textarea, .edit-modal input, .edit-modal textarea {
             width: 100%;
             margin-bottom: 10px;
         }
@@ -127,6 +126,17 @@
         .arrow-button:hover {
             background-color: white;
             color: black;
+        }
+        .event-list {
+            margin-bottom: 15px;
+        }
+        .event-list button {
+            display: block;
+            margin: 5px 0;
+            padding: 5px;
+            width: 100%;
+            text-align: center;
+            cursor: pointer;
         }
     </style>
 </head>
@@ -152,12 +162,20 @@
 <div class="calendar" id="calendar"></div>
 
 <div class="modal" id="eventModal">
+    <h2>Events for Day <span id="modalDay"></span></h2>
+    <div class="event-list" id="eventList"></div>
+    <button id="addEventBtn" onclick="openAddEventModal()">Add Event</button>
+    <button id="editEventBtn" onclick="openEditEventModal()" style="display:none;">Edit Event</button>
+    <button id="deleteEventBtn" onclick="deleteSelectedEvent()" style="display:none;">Delete Event</button>
+    <button onclick="closeModal()">Cancel</button>
+</div>
+
+<div class="edit-modal" id="addEventModal">
     <h2>Add/Edit Event</h2>
     <input type="text" id="eventTitle" placeholder="Event Title">
     <textarea id="eventDescription" placeholder="Event Description"></textarea>
     <button onclick="saveEvent()">Save</button>
-    <button onclick="deleteEvent()">Delete</button>
-    <button onclick="closeModal()">Cancel</button>
+    <button onclick="closeEditModal()">Cancel</button>
 </div>
 
 <div class="overlay" id="overlay"></div>
@@ -166,12 +184,16 @@
     const calendar = document.getElementById("calendar");
     const currentMonthEl = document.getElementById("current-month");
     const eventModal = document.getElementById("eventModal");
+    const addEventModal = document.getElementById("addEventModal");
     const overlay = document.getElementById("overlay");
+    const eventList = document.getElementById("eventList");
+    const modalDayEl = document.getElementById("modalDay");
 
     let currentMonth = new Date().getMonth();
     let currentYear = new Date().getFullYear();
     let events = JSON.parse(localStorage.getItem('events')) || {};
     let selectedDay = null;
+    let selectedEventIndex = null;
 
     function renderCalendar() {
         const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
@@ -208,21 +230,43 @@
 
     function openModal(day) {
         selectedDay = `${currentYear}-${currentMonth}-${day}`;
-        const eventTitle = document.getElementById('eventTitle');
-        const eventDescription = document.getElementById('eventDescription');
-        
-        const event = events[selectedDay] ? events[selectedDay][0] : { title: '', description: '' };
-        
-        eventTitle.value = event.title;
-        eventDescription.value = event.description;
+        modalDayEl.innerText = day;
+        eventList.innerHTML = '';
+
+        if (events[selectedDay] && events[selectedDay].length > 0) {
+            events[selectedDay].forEach((event, index) => {
+                const eventBtn = document.createElement('button');
+                eventBtn.innerText = event.title;
+                eventBtn.onclick = () => selectEvent(index);
+                eventList.appendChild(eventBtn);
+            });
+            document.getElementById("editEventBtn").style.display = 'block';
+            document.getElementById("deleteEventBtn").style.display = 'block';
+        } else {
+            document.getElementById("editEventBtn").style.display = 'none';
+            document.getElementById("deleteEventBtn").style.display = 'none';
+        }
 
         eventModal.classList.add('active');
         overlay.classList.add('active');
     }
 
-    function closeModal() {
-        eventModal.classList.remove('active');
-        overlay.classList.remove('active');
+    function selectEvent(index) {
+        selectedEventIndex = index;
+    }
+
+    function openAddEventModal() {
+        selectedEventIndex = null;
+        addEventModal.classList.add('active');
+    }
+
+    function openEditEventModal() {
+        if (selectedEventIndex !== null) {
+            const selectedEvent = events[selectedDay][selectedEventIndex];
+            document.getElementById('eventTitle').value = selectedEvent.title;
+            document.getElementById('eventDescription').value = selectedEvent.description;
+            addEventModal.classList.add('active');
+        }
     }
 
     function saveEvent() {
@@ -232,18 +276,37 @@
         if (!events[selectedDay]) {
             events[selectedDay] = [];
         }
-        
-        events[selectedDay].push({ title: eventTitle, description: eventDescription });
+
+        const newEvent = { title: eventTitle, description: eventDescription };
+
+        if (selectedEventIndex !== null) {
+            events[selectedDay][selectedEventIndex] = newEvent;
+        } else {
+            events[selectedDay].push(newEvent);
+        }
+
         localStorage.setItem('events', JSON.stringify(events));
-        closeModal();
+        closeEditModal();
         renderCalendar();
     }
 
-    function deleteEvent() {
-        delete events[selectedDay];
-        localStorage.setItem('events', JSON.stringify(events));
-        closeModal();
-        renderCalendar();
+    function deleteSelectedEvent() {
+        if (selectedEventIndex !== null) {
+            events[selectedDay].splice(selectedEventIndex, 1);
+            localStorage.setItem('events', JSON.stringify(events));
+            closeModal();
+            renderCalendar();
+        }
+    }
+
+    function closeModal() {
+        eventModal.classList.remove('active');
+        overlay.classList.remove('active');
+    }
+
+    function closeEditModal() {
+        addEventModal.classList.remove('active');
+        overlay.classList.remove('active');
     }
 
     function prevMonth() {
