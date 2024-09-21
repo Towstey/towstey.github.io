@@ -7,33 +7,44 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: transparent; /* Transparent background */
+            background-color: transparent;
             color: black;
         }
         .calendar {
-            width: 100%;
-            max-width: 600px;
+            width: 90%; /* Slightly smaller calendar */
+            max-width: 550px; /* Slightly smaller max width */
             margin: 0 auto;
             display: grid;
             grid-template-columns: repeat(7, 1fr);
-            gap: 10px;
+            gap: 8px; /* Reduce gap to make everything a bit tighter */
         }
         .calendar-header {
             text-align: center;
             margin-bottom: 20px;
         }
-        .day, .empty-day, .day-indicator {
+        .day, .empty-day {
             padding: 10px;
-            border: 2px solid #ccc;
+            border: 2px solid black; /* Black borders for day boxes */
             border-radius: 8px;
             text-align: center;
             cursor: pointer;
             background-color: white;
             color: black;
-            min-height: 60px;
+            min-height: 40px; /* Reduced height to remove empty space under numbers */
+            line-height: 40px; /* Align text vertically to remove space */
         }
         .day:hover {
             background-color: #f0f0f0;
+        }
+        .day-indicator {
+            padding: 10px;
+            border: 2px solid black; /* Black borders for day indicators */
+            border-radius: 8px;
+            text-align: center;
+            background-color: black; /* Black background for indicators */
+            color: white; /* White text for indicators */
+            min-height: 40px;
+            margin-bottom: 8px; /* Restoring margin under the day indicators */
         }
         .modal {
             display: none;
@@ -79,7 +90,7 @@
         }
         .arrow-button {
             background-color: transparent;
-            border: 2px solid #ccc;
+            border: 2px solid black; /* Black border for the arrow buttons */
             padding: 5px 10px;
             border-radius: 8px;
             cursor: pointer;
