@@ -8,7 +8,7 @@
         body {
             font-family: Arial, sans-serif;
             background-color: transparent; /* Transparent background */
-            color: white;
+            color: black;
         }
         .calendar {
             width: 100%;
@@ -23,7 +23,7 @@
             margin-bottom: 20px;
         }
         .day, .empty-day, .day-indicator {
-            padding: 15px;
+            padding: 10px;
             border: 2px solid #ccc;
             border-radius: 8px;
             text-align: center;
@@ -130,7 +130,7 @@
 
     let currentMonth = new Date().getMonth();
     let currentYear = new Date().getFullYear();
-    let events = {};
+    let events = JSON.parse(localStorage.getItem('events')) || {};
     let selectedDay = null;
 
     function renderCalendar() {
@@ -140,14 +140,12 @@
         calendar.innerHTML = '';
         currentMonthEl.innerText = new Date(currentYear, currentMonth).toLocaleString('default', { month: 'long', year: 'numeric' });
 
-        // Render empty spaces for the first days of the month
         for (let i = 0; i < firstDayOfMonth; i++) {
             const emptyDay = document.createElement('div');
             emptyDay.classList.add('empty-day');
             calendar.appendChild(emptyDay);
         }
 
-        // Render the days of the month
         for (let i = 1; i <= daysInMonth; i++) {
             const dayEl = document.createElement('div');
             dayEl.classList.add('day');
@@ -173,8 +171,10 @@
         const eventTitle = document.getElementById('eventTitle');
         const eventDescription = document.getElementById('eventDescription');
         
-        eventTitle.value = '';
-        eventDescription.value = '';
+        const event = events[selectedDay] ? events[selectedDay][0] : { title: '', description: '' };
+        
+        eventTitle.value = event.title;
+        eventDescription.value = event.description;
 
         eventModal.classList.add('active');
         overlay.classList.add('active');
@@ -192,14 +192,16 @@
         if (!events[selectedDay]) {
             events[selectedDay] = [];
         }
-
-        events[selectedDay].push({ title: eventTitle, description: eventDescription });
+        
+        events[selectedDay] = [{ title: eventTitle, description: eventDescription }];
+        localStorage.setItem('events', JSON.stringify(events));
         closeModal();
         renderCalendar();
     }
 
     function deleteEvent() {
         delete events[selectedDay];
+        localStorage.setItem('events', JSON.stringify(events));
         closeModal();
         renderCalendar();
     }
