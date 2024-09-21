@@ -11,40 +11,66 @@
             color: black;
         }
         .calendar {
-            width: 90%; /* Slightly smaller calendar */
-            max-width: 550px; /* Slightly smaller max width */
+            width: 95%; /* Slightly wider */
+            max-width: 600px; /* Increased width */
             margin: 0 auto;
             display: grid;
             grid-template-columns: repeat(7, 1fr);
-            gap: 8px; /* Reduce gap to make everything a bit tighter */
+            gap: 10px;
         }
         .calendar-header {
             text-align: center;
             margin-bottom: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .month-indicator {
+            background-color: black; /* Inverted color */
+            color: white;
+            padding: 10px 20px;
+            border: 2px solid black;
+            border-radius: 8px;
+            margin: 0 10px;
         }
         .day, .empty-day {
             padding: 10px;
-            border: 2px solid black; /* Black borders for day boxes */
+            border: 2px solid black;
             border-radius: 8px;
             text-align: center;
             cursor: pointer;
             background-color: white;
             color: black;
-            min-height: 40px; /* Reduced height to remove empty space under numbers */
-            line-height: 40px; /* Align text vertically to remove space */
+            min-height: 40px;
+            line-height: 40px;
         }
         .day:hover {
             background-color: #f0f0f0;
         }
         .day-indicator {
             padding: 10px;
-            border: 2px solid black; /* Black borders for day indicators */
+            border: 2px solid black;
             border-radius: 8px;
             text-align: center;
-            background-color: black; /* Black background for indicators */
-            color: white; /* White text for indicators */
+            background-color: black;
+            color: white;
             min-height: 40px;
-            margin-bottom: 8px; /* Restoring margin under the day indicators */
+            margin-bottom: 8px;
+        }
+        .event {
+            background-color: black;
+            color: white;
+            height: 5px; /* Slim black rectangle initially */
+            transition: all 0.3s ease; /* Smooth transition */
+            overflow: hidden;
+            border-radius: 4px;
+            margin-top: 5px;
+            font-size: 12px;
+            line-height: normal;
+        }
+        .event:hover {
+            height: auto; /* Expands to show the full event */
+            padding: 5px;
         }
         .modal {
             display: none;
@@ -81,22 +107,16 @@
             display: flex;
             flex-direction: column;
         }
-        .event {
-            background-color: #007bff;
-            color: white;
-            padding: 5px;
-            margin-top: 5px;
-            font-size: 12px;
-        }
         .arrow-button {
-            background-color: transparent;
-            border: 2px solid black; /* Black border for the arrow buttons */
+            background-color: black; /* Inverted colors */
+            color: white;
+            border: 2px solid black;
             padding: 5px 10px;
             border-radius: 8px;
             cursor: pointer;
         }
         .arrow-button:hover {
-            background-color: #f0f0f0;
+            background-color: white;
             color: black;
         }
     </style>
@@ -105,7 +125,7 @@
 
 <div class="calendar-header">
     <button class="arrow-button" onclick="prevMonth()">&#8592;</button>
-    <span id="current-month"></span>
+    <span class="month-indicator" id="current-month"></span>
     <button class="arrow-button" onclick="nextMonth()">&#8594;</button>
 </div>
 
