@@ -7,7 +7,7 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #333; /* Force dark background for Notion */
+            background-color: transparent; /* Transparent background */
             color: white;
         }
         .calendar {
@@ -22,15 +22,15 @@
             text-align: center;
             margin-bottom: 20px;
         }
-        .day, .empty-day {
+        .day, .empty-day, .day-indicator {
             padding: 15px;
             border: 2px solid #ccc;
             border-radius: 8px;
             text-align: center;
             cursor: pointer;
-            background-color: white; /* Set the background to white explicitly */
+            background-color: white;
             color: black;
-            min-height: 60px; /* Ensure a consistent height for days */
+            min-height: 60px;
         }
         .day:hover {
             background-color: #f0f0f0;
@@ -98,6 +98,17 @@
     <button class="arrow-button" onclick="nextMonth()">&#8594;</button>
 </div>
 
+<!-- Day Indicators (Sunday to Saturday) -->
+<div class="calendar" id="day-indicators">
+    <div class="day-indicator">Sun</div>
+    <div class="day-indicator">Mon</div>
+    <div class="day-indicator">Tue</div>
+    <div class="day-indicator">Wed</div>
+    <div class="day-indicator">Thu</div>
+    <div class="day-indicator">Fri</div>
+    <div class="day-indicator">Sat</div>
+</div>
+
 <div class="calendar" id="calendar"></div>
 
 <div class="modal" id="eventModal">
@@ -129,12 +140,14 @@
         calendar.innerHTML = '';
         currentMonthEl.innerText = new Date(currentYear, currentMonth).toLocaleString('default', { month: 'long', year: 'numeric' });
 
+        // Render empty spaces for the first days of the month
         for (let i = 0; i < firstDayOfMonth; i++) {
             const emptyDay = document.createElement('div');
             emptyDay.classList.add('empty-day');
             calendar.appendChild(emptyDay);
         }
 
+        // Render the days of the month
         for (let i = 1; i <= daysInMonth; i++) {
             const dayEl = document.createElement('div');
             dayEl.classList.add('day');
