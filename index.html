@@ -61,8 +61,8 @@
             margin-bottom: 8px;
         }
         .event {
-            background-color: black;
-            color: white;
+            background-color: white;
+            color: black;
             height: 5px;
             width: 100%;
             transition: height 0.3s ease;
@@ -73,6 +73,7 @@
             text-overflow: ellipsis;
             white-space: nowrap;
             text-align: center;
+            border: 1px solid black;
         }
         .event:hover {
             height: 40px; /* Expands vertically only */
@@ -131,12 +132,32 @@
             margin-bottom: 15px;
         }
         .event-list button {
+            background-color: black;
+            color: white;
             display: block;
             margin: 5px 0;
             padding: 5px;
             width: 100%;
             text-align: center;
             cursor: pointer;
+            border: 2px solid black;
+        }
+        .modal-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 15px;
+        }
+        .modal-buttons button {
+            background-color: black;
+            color: white;
+            padding: 5px 10px;
+            cursor: pointer;
+            border: 2px solid black;
+            border-radius: 4px;
+        }
+        .modal-buttons button:hover {
+            background-color: white;
+            color: black;
         }
     </style>
 </head>
@@ -162,16 +183,16 @@
 <div class="calendar" id="calendar"></div>
 
 <div class="modal" id="eventModal">
-    <h2>Events for Day <span id="modalDay"></span></h2>
     <div class="event-list" id="eventList"></div>
-    <button id="addEventBtn" onclick="openAddEventModal()">Add Event</button>
-    <button id="editEventBtn" onclick="openEditEventModal()" style="display:none;">Edit Event</button>
-    <button id="deleteEventBtn" onclick="deleteSelectedEvent()" style="display:none;">Delete Event</button>
-    <button onclick="closeModal()">Cancel</button>
+    <div class="modal-buttons">
+        <button id="addEventBtn" onclick="openAddEventModal()">Add</button>
+        <button id="editEventBtn" onclick="openEditEventModal()" style="display:none;">Edit</button>
+        <button id="deleteEventBtn" onclick="deleteSelectedEvent()" style="display:none;">Delete</button>
+        <button onclick="closeModal()">Cancel</button>
+    </div>
 </div>
 
 <div class="edit-modal" id="addEventModal">
-    <h2>Add/Edit Event</h2>
     <input type="text" id="eventTitle" placeholder="Event Title">
     <textarea id="eventDescription" placeholder="Event Description"></textarea>
     <button onclick="saveEvent()">Save</button>
@@ -187,7 +208,6 @@
     const addEventModal = document.getElementById("addEventModal");
     const overlay = document.getElementById("overlay");
     const eventList = document.getElementById("eventList");
-    const modalDayEl = document.getElementById("modalDay");
 
     let currentMonth = new Date().getMonth();
     let currentYear = new Date().getFullYear();
@@ -230,7 +250,6 @@
 
     function openModal(day) {
         selectedDay = `${currentYear}-${currentMonth}-${day}`;
-        modalDayEl.innerText = day;
         eventList.innerHTML = '';
 
         if (events[selectedDay] && events[selectedDay].length > 0) {
