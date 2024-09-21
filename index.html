@@ -11,8 +11,8 @@
             color: black;
         }
         .calendar {
-            width: 95%; /* Slightly wider */
-            max-width: 600px; /* Increased width */
+            width: 95%;
+            max-width: 600px;
             margin: 0 auto;
             display: grid;
             grid-template-columns: repeat(7, 1fr);
@@ -26,7 +26,7 @@
             align-items: center;
         }
         .month-indicator {
-            background-color: black; /* Inverted color */
+            background-color: black;
             color: white;
             padding: 10px 20px;
             border: 2px solid black;
@@ -60,17 +60,21 @@
         .event {
             background-color: black;
             color: white;
-            height: 5px; /* Slim black rectangle initially */
-            transition: all 0.3s ease; /* Smooth transition */
+            height: 5px;
+            width: 100%;
+            transition: all 0.3s ease;
             overflow: hidden;
             border-radius: 4px;
             margin-top: 5px;
             font-size: 12px;
-            line-height: normal;
+            white-space: nowrap;
+            text-overflow: ellipsis;
         }
         .event:hover {
-            height: auto; /* Expands to show the full event */
+            height: 50px; /* Expands when hovered */
+            overflow-y: auto;
             padding: 5px;
+            white-space: normal; /* Allow multiline when expanded */
         }
         .modal {
             display: none;
@@ -108,7 +112,7 @@
             flex-direction: column;
         }
         .arrow-button {
-            background-color: black; /* Inverted colors */
+            background-color: black;
             color: white;
             border: 2px solid black;
             padding: 5px 10px;
