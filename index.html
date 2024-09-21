@@ -43,6 +43,9 @@
             color: black;
             min-height: 40px;
             line-height: 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
         }
         .day:hover {
             background-color: #f0f0f0;
@@ -67,11 +70,13 @@
             border-radius: 4px;
             margin-top: 5px;
             font-size: 12px;
-            white-space: nowrap;
             text-overflow: ellipsis;
+            white-space: nowrap;
+            text-align: center;
         }
         .event:hover {
-            height: 50px; /* Expands when hovered */
+            height: auto; /* Expands when hovered */
+            max-height: 50px; /* Scroll when too long */
             overflow-y: auto;
             padding: 5px;
             white-space: normal; /* Allow multiline when expanded */
@@ -228,7 +233,7 @@
             events[selectedDay] = [];
         }
         
-        events[selectedDay] = [{ title: eventTitle, description: eventDescription }];
+        events[selectedDay].push({ title: eventTitle, description: eventDescription });
         localStorage.setItem('events', JSON.stringify(events));
         closeModal();
         renderCalendar();
