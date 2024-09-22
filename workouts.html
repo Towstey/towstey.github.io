@@ -14,26 +14,33 @@
             margin: 0 auto;
         }
         .box {
-            background-color: black;
+            background-color: transparent;
             padding: 20px;
-            border-radius: 10px;
             margin-bottom: 20px;
             position: relative;
         }
+        .title-box {
+            background-color: black;
+            color: white;
+            padding: 10px;
+            border-radius: 8px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
         .button {
-            background-color: white;
-            border: 2px solid black;
+            background-color: black;
+            border: 2px solid white;
             padding: 10px 20px;
             cursor: pointer;
             display: inline-block;
             margin: 10px;
             text-align: center;
             border-radius: 10px;
-            color: black;
+            color: white;
         }
         .button:hover {
-            background-color: black;
-            color: white;
+            background-color: white;
+            color: black;
         }
         .workout-box, .new-workout, .view-workout, .workout-day {
             display: none;
@@ -49,18 +56,22 @@
         .exercise-row input {
             margin-left: 10px;
             width: 100px;
+            border-radius: 5px;
+            text-align: center;
         }
         .week-table {
             width: 100%;
             margin: 10px 0;
+            border-collapse: collapse;
         }
         .week-table td, .week-table th {
             padding: 8px;
             text-align: center;
+            border: 1px solid white;
         }
         .week-table th {
-            background-color: white;
-            color: black;
+            background-color: black;
+            color: white;
             padding: 10px;
             border-radius: 10px;
         }
@@ -70,7 +81,7 @@
             cursor: pointer;
         }
         .back-button {
-            background-color: red;
+            background-color: black;
             padding: 10px 20px;
             cursor: pointer;
             border-radius: 5px;
@@ -87,13 +98,19 @@
             text-align: center;
         }
         .right-buttons {
-            position: absolute;
-            right: 10px;
-            top: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
         }
-        .right-buttons .button {
-            display: block;
-            margin-bottom: 5px;
+        .input-box {
+            border-radius: 8px;
+            text-align: center;
+            padding: 10px;
+        }
+        .calendar-check {
+            color: green;
+            font-size: 20px;
+            margin-left: 10px;
         }
     </style>
     <title>Workout Tracker</title>
@@ -101,35 +118,38 @@
 <body>
 
 <div class="container">
-    <div class="box workout-box" id="start-box">
-        <div class="button" id="new-workout-btn">New Workout</div>
-        <div class="button" id="view-workout-btn">View Workouts</div>
-    </div>
-
-    <div class="box new-workout" id="new-workout-box">
+    <!-- Title for Create New Workout -->
+    <div class="title-box" id="start-box">
         <h2>Create New Workout</h2>
+    </div>
+    
+    <div class="box new-workout" id="new-workout-box">
+        <div class="title-box"><h2>Create New Workout</h2></div>
         <form id="new-workout-form">
             <div class="form-row">
-                <input type="text" id="workout-name" placeholder="Workout Name">
+                <input type="text" id="workout-name" class="input-box" placeholder="Workout Name">
             </div>
-            <div id="workout-days"></div>
-            <div class="button" id="add-day-btn">Add Exercise</div>
+            <div id="workout-days" style="display: flex; flex-wrap: wrap;"></div>
             <div class="button" id="save-workout-btn">Save Workout</div>
             <div class="back-button" id="back-to-start">Back</div>
         </form>
     </div>
 
-    <div class="box view-workout" id="view-workout-box">
+    <!-- Title for View Workouts -->
+    <div class="title-box view-workout" id="view-workout-title">
         <h2>Your Workouts</h2>
+    </div>
+
+    <div class="box view-workout" id="view-workout-box">
         <div id="workout-list"></div>
         <div class="back-button" id="back-to-start-view">Back</div>
     </div>
 
     <div class="box workout-day" id="workout-day-box">
-        <h2>Today's Exercises</h2>
+        <div class="title-box"><h2>Today's Exercises</h2></div>
         <div id="workout-day-content"></div>
         <div class="form-row">
-            <input type="number" id="rest-time" placeholder="Rest Time (seconds)">
+            <input type="number" id="rest-time" class="input-box" placeholder="Rest Time (seconds)">
         </div>
         <div class="button" id="complete-day-btn">Complete Day</div>
         <div class="back-button" id="back-to-view">Back</div>
@@ -142,22 +162,16 @@
 
     // Check if there are workouts and show the appropriate buttons
     function checkWorkouts() {
-        if (workouts.length === 0) {
-            document.getElementById('start-box').style.display = 'block';
-        } else {
-            document.getElementById('start-box').style.display = 'block';
-        }
+        document.getElementById('start-box').style.display = workouts.length === 0 ? 'block' : 'none';
     }
 
     document.getElementById('new-workout-btn').addEventListener('click', () => {
-        document.getElementById('start-box').style.display = 'none';
         document.getElementById('new-workout-box').style.display = 'block';
         createWorkoutDays();
     });
 
     document.getElementById('view-workout-btn').addEventListener('click', () => {
         showWorkoutList();
-        document.getElementById('start-box').style.display = 'none';
         document.getElementById('view-workout-box').style.display = 'block';
     });
 
@@ -199,7 +213,7 @@
     function addExerciseRow(container) {
         const exerciseRow = document.createElement('div');
         exerciseRow.classList.add('exercise-row');
-        exerciseRow.innerHTML = `<input type="text" placeholder="Exercise Name" class="exercise-name"><input type="number" placeholder="Sets" class="exercise-sets"><input type="number" placeholder="Reps" class="exercise-reps"><div class="button remove-exercise">Remove</div>`;
+        exerciseRow.innerHTML = `<input type="text" class="input-box" placeholder="Exercise Name"><input type="number" class="input-box" placeholder="Sets"><input type="number" class="input-box" placeholder="Reps"><div class="button remove-exercise">Remove</div>`;
         container.appendChild(exerciseRow);
 
         exerciseRow.querySelector('.remove-exercise').addEventListener('click', () => {
@@ -218,9 +232,9 @@
         days.forEach(day => {
             const exercises = [];
             document.querySelectorAll(`#exercise-list-${day} .exercise-row`).forEach(row => {
-                const name = row.querySelector('.exercise-name').value;
-                const sets = row.querySelector('.exercise-sets').value;
-                const reps = row.querySelector('.exercise-reps').value;
+                const name = row.querySelector('input[placeholder="Exercise Name"]').value;
+                const sets = row.querySelector('input[placeholder="Sets"]').value;
+                const reps = row.querySelector('input[placeholder="Reps"]').value;
                 exercises.push({ name, sets, reps });
             });
             workoutPlan.days.push({ day, exercises });
@@ -228,7 +242,6 @@
         workouts.push(workoutPlan);
         alert('Workout saved!');
         document.getElementById('new-workout-box').style.display = 'none';
-        document.getElementById('start-box').style.display = 'block';
         checkWorkouts();
     });
 
@@ -238,12 +251,28 @@
         workouts.forEach((workout, index) => {
             const workoutDiv = document.createElement('div');
             workoutDiv.classList.add('box');
-            workoutDiv.innerHTML = `<strong>${workout.name}</strong> - Completed: ${workout.completedDays.length}/5 days`;
+            workoutDiv.innerHTML = `<strong>${workout.name}</strong> - Completed: ${workout.completedDays.length}/5 days <br>`;
+            const daysDiv = document.createElement('div');
+            daysDiv.style.display = 'flex';
+            daysDiv.style.justifyContent = 'space-around';
+
+            workout.days.forEach((day, dayIndex) => {
+                const dayElement = document.createElement('div');
+                dayElement.classList.add('day-box');
+                dayElement.innerHTML = `<span>${day.day}</span>`;
+                if (workout.completedDays.includes(dayIndex)) {
+                    dayElement.innerHTML += `<span class="calendar-check">&#10003;</span>`;
+                }
+                daysDiv.appendChild(dayElement);
+            });
+
             const rightButtons = document.createElement('div');
             rightButtons.classList.add('right-buttons');
             rightButtons.innerHTML = `<span class="delete-edit-start" onclick="deleteWorkout(${index})">Delete</span>
                                       <span class="delete-edit-start" onclick="editWorkout(${index})">Edit</span>
                                       <span class="delete-edit-start" onclick="startWorkout(${index})">Start/Continue</span>`;
+            
+            workoutDiv.appendChild(daysDiv);
             workoutDiv.appendChild(rightButtons);
             workoutList.appendChild(workoutDiv);
         });
@@ -257,7 +286,7 @@
         dayWorkout.exercises.forEach(exercise => {
             const exerciseItem = document.createElement('div');
             exerciseItem.classList.add('form-row');
-            exerciseItem.innerHTML = `<span>${exercise.name} - ${exercise.sets} sets x ${exercise.reps} reps</span><input type="checkbox" class="checkbox">`;
+            exerciseItem.innerHTML = `<span>${exercise.name} - ${exercise.sets} sets x ${exercise.reps} reps</span>`;
             workoutDayContent.appendChild(exerciseItem);
         });
         document.getElementById('view-workout-box').style.display = 'none';
@@ -272,8 +301,6 @@
         if (workout.currentDay >= 5) {
             alert('Workout Complete!');
             document.getElementById('workout-day-box').style.display = 'none';
-            document.getElementById('start-box').style.display = 'block';
-            workout.currentDay = 0;
         } else {
             document.getElementById('workout-day-box').style.display = 'none';
             document.getElementById('view-workout-box').style.display = 'block';
