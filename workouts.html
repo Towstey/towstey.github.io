@@ -13,36 +13,33 @@
             width: 80%;
             margin: 0 auto;
         }
-        .button {
+        .box {
             background-color: black;
-            border: 2px solid white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            position: relative;
+        }
+        .button {
+            background-color: white;
+            border: 2px solid black;
             padding: 10px 20px;
             cursor: pointer;
             display: inline-block;
             margin: 10px;
             text-align: center;
             border-radius: 10px;
+            color: black;
         }
         .button:hover {
-            background-color: white;
-            color: black;
+            background-color: black;
+            color: white;
         }
         .workout-box, .new-workout, .view-workout, .workout-day {
             display: none;
-            background-color: rgba(0, 0, 0, 0.8);
-            padding: 20px;
-            border-radius: 10px;
-        }
-        .no-workout {
-            display: block;
-            text-align: center;
         }
         .form-row {
             margin-bottom: 15px;
-        }
-        .form-row input {
-            padding: 8px;
-            width: 80%;
         }
         .exercise-row {
             display: flex;
@@ -53,31 +50,50 @@
             margin-left: 10px;
             width: 100px;
         }
-        .checkbox {
-            display: inline-block;
-        }
         .week-table {
             width: 100%;
-            border-collapse: collapse;
+            margin: 10px 0;
         }
         .week-table td, .week-table th {
-            border: 1px solid white;
             padding: 8px;
             text-align: center;
         }
         .week-table th {
-            background-color: black;
+            background-color: white;
+            color: black;
+            padding: 10px;
+            border-radius: 10px;
         }
         .delete-edit-start {
+            display: block;
+            padding: 10px 0;
             cursor: pointer;
         }
         .back-button {
             background-color: red;
-            padding: 5px 10px;
-            border-radius: 5px;
+            padding: 10px 20px;
             cursor: pointer;
-            margin-top: 10px;
+            border-radius: 5px;
+            color: white;
+        }
+        .day-box {
             display: inline-block;
+            background-color: rgba(255, 255, 255, 0.9);
+            color: black;
+            padding: 10px;
+            margin: 5px;
+            border-radius: 8px;
+            min-width: 120px;
+            text-align: center;
+        }
+        .right-buttons {
+            position: absolute;
+            right: 10px;
+            top: 10px;
+        }
+        .right-buttons .button {
+            display: block;
+            margin-bottom: 5px;
         }
     </style>
     <title>Workout Tracker</title>
@@ -85,16 +101,12 @@
 <body>
 
 <div class="container">
-    <div class="workout-box" id="start-box">
+    <div class="box workout-box" id="start-box">
         <div class="button" id="new-workout-btn">New Workout</div>
         <div class="button" id="view-workout-btn">View Workouts</div>
     </div>
 
-    <div class="no-workout" id="no-workout-box">
-        <div class="button" id="no-workout-btn">New Workout</div>
-    </div>
-
-    <div class="new-workout" id="new-workout-box">
+    <div class="box new-workout" id="new-workout-box">
         <h2>Create New Workout</h2>
         <form id="new-workout-form">
             <div class="form-row">
@@ -107,13 +119,13 @@
         </form>
     </div>
 
-    <div class="view-workout" id="view-workout-box">
+    <div class="box view-workout" id="view-workout-box">
         <h2>Your Workouts</h2>
         <div id="workout-list"></div>
         <div class="back-button" id="back-to-start-view">Back</div>
     </div>
 
-    <div class="workout-day" id="workout-day-box">
+    <div class="box workout-day" id="workout-day-box">
         <h2>Today's Exercises</h2>
         <div id="workout-day-content"></div>
         <div class="form-row">
@@ -131,22 +143,14 @@
     // Check if there are workouts and show the appropriate buttons
     function checkWorkouts() {
         if (workouts.length === 0) {
-            document.getElementById('start-box').style.display = 'none';
-            document.getElementById('no-workout-box').style.display = 'block';
+            document.getElementById('start-box').style.display = 'block';
         } else {
             document.getElementById('start-box').style.display = 'block';
-            document.getElementById('no-workout-box').style.display = 'none';
         }
     }
 
     document.getElementById('new-workout-btn').addEventListener('click', () => {
         document.getElementById('start-box').style.display = 'none';
-        document.getElementById('new-workout-box').style.display = 'block';
-        createWorkoutDays();
-    });
-
-    document.getElementById('no-workout-btn').addEventListener('click', () => {
-        document.getElementById('no-workout-box').style.display = 'none';
         document.getElementById('new-workout-box').style.display = 'block';
         createWorkoutDays();
     });
@@ -178,7 +182,7 @@
         const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
         days.forEach(day => {
             const dayDiv = document.createElement('div');
-            dayDiv.classList.add('form-row');
+            dayDiv.classList.add('day-box');
             dayDiv.innerHTML = `<h3>${day}</h3><div id="exercise-list-${day}"></div><div class="button add-exercise" data-day="${day}">Add Exercise</div>`;
             workoutDays.appendChild(dayDiv);
         });
@@ -233,7 +237,14 @@
         workoutList.innerHTML = '';
         workouts.forEach((workout, index) => {
             const workoutDiv = document.createElement('div');
-            workoutDiv.innerHTML = `<strong>${workout.name}</strong> - Completed: ${workout.completedDays.length}/5 days <br> <span class="delete-edit-start" onclick="deleteWorkout(${index})">Delete</span> | <span class="delete-edit-start" onclick="editWorkout(${index})">Edit</span> | <span class="delete-edit-start" onclick="startWorkout(${index})">Start/Continue</span>`;
+            workoutDiv.classList.add('box');
+            workoutDiv.innerHTML = `<strong>${workout.name}</strong> - Completed: ${workout.completedDays.length}/5 days`;
+            const rightButtons = document.createElement('div');
+            rightButtons.classList.add('right-buttons');
+            rightButtons.innerHTML = `<span class="delete-edit-start" onclick="deleteWorkout(${index})">Delete</span>
+                                      <span class="delete-edit-start" onclick="editWorkout(${index})">Edit</span>
+                                      <span class="delete-edit-start" onclick="startWorkout(${index})">Start/Continue</span>`;
+            workoutDiv.appendChild(rightButtons);
             workoutList.appendChild(workoutDiv);
         });
     }
