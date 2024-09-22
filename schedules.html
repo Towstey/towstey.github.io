@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>School Schedule</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            padding: 20px;
+        }
+        .schedule-container {
+            display: flex;
+            gap: 50px;
+        }
+        .schedule {
+            display: grid;
+            grid-template-rows: repeat(6, 1fr);
+            width: 200px;
+            gap: 15px;
+        }
+        .day {
+            background-color: white;
+            padding: 10px;
+            border: 2px solid black;
+            border-radius: 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        .day:hover {
+            background-color: #f0f0f0;
+            height: auto;
+        }
+        .day .events {
+            display: none;
+            flex-direction: column;
+        }
+        .day:hover .events {
+            display: flex;
+        }
+        .header {
+            background-color: black;
+            color: white;
+            padding: 10px;
+            text-align: center;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            border: 2px solid black;
+        }
+        .color-change-btn {
+            display: flex;
+            justify-content: center;
+            margin-top: 10px;
+        }
+        .color-picker-button {
+            background-color: black;
+            color: white;
+            border: 2px solid black;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+        /* Hidden color picker */
+        #colorPicker {
+            display: none;
+        }
+        .add-event-btn {
+            margin-top: 5px;
+            background-color: black;
+            color: white;
+            padding: 5px;
+            border: none;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+<div class="schedule-container">
+    <!-- Schedule for Week 1 -->
+    <div class="schedule" id="schedule1">
+        <div class="header" contenteditable="true" id="header1">NAME</div>
+        <div class="day" id="monday1">Monday <div class="events"></div></div>
+        <div class="day" id="tuesday1">Tuesday <div class="events"></div></div>
+        <div class="day" id="wednesday1">Wednesday <div class="events"></div></div>
+        <div class="day" id="thursday1">Thursday <div class="events"></div></div>
+        <div class="day" id="friday1">Friday <div class="events"></div></div>
+        <div class="color-change-btn">
+            <button class="color-picker-button" id="colorPickerButton1">Change Color</button>
+            <input type="color" id="colorPicker1" value="#000000">
+        </div>
+    </div>
+
+    <!-- Schedule for Week 2 -->
+    <div class="schedule" id="schedule2">
+        <div class="header" contenteditable="true" id="header2">NAME</div>
+        <div class="day" id="monday2">Monday <div class="events"></div></div>
+        <div class="day" id="tuesday2">Tuesday <div class="events"></div></div>
+        <div class="day" id="wednesday2">Wednesday <div class="events"></div></div>
+        <div class="day" id="thursday2">Thursday <div class="events"></div></div>
+        <div class="day" id="friday2">Friday <div class="events"></div></div>
+        <div class="color-change-btn">
+            <button class="color-picker-button" id="colorPickerButton2">Change Color</button>
+            <input type="color" id="colorPicker2" value="#000000">
+        </div>
+    </div>
+</div>
+
+<script>
+    // Apply color changes for schedule 1
+    const colorPickerButton1 = document.getElementById("colorPickerButton1");
+    const colorPicker1 = document.getElementById("colorPicker1");
+    const header1 = document.getElementById("header1");
+
+    colorPickerButton1.addEventListener("click", () => {
+        colorPicker1.click();
+    });
+
+    colorPicker1.addEventListener("input", (e) => {
+        const newColor = e.target.value;
+        header1.style.backgroundColor = newColor;
+        colorPickerButton1.style.backgroundColor = newColor;
+    });
+
+    // Apply color changes for schedule 2
+    const colorPickerButton2 = document.getElementById("colorPickerButton2");
+    const colorPicker2 = document.getElementById("colorPicker2");
+    const header2 = document.getElementById("header2");
+
+    colorPickerButton2.addEventListener("click", () => {
+        colorPicker2.click();
+    });
+
+    colorPicker2.addEventListener("input", (e) => {
+        const newColor = e.target.value;
+        header2.style.backgroundColor = newColor;
+        colorPickerButton2.style.backgroundColor = newColor;
+    });
+
+    // Functionality to add events dynamically
+    function addEvent(dayElementId) {
+        const dayElement = document.getElementById(dayElementId);
+        const eventTitle = prompt("Enter the class and time (Format: Class - Time):");
+
+        if (eventTitle) {
+            const eventsDiv = dayElement.querySelector(".events");
+            const eventItem = document.createElement("div");
+            eventItem.innerText = eventTitle;
+            eventsDiv.appendChild(eventItem);
+        }
+    }
+
+    // Add event listeners to days for adding events
+    document.querySelectorAll(".day").forEach(dayElement => {
+        dayElement.addEventListener("dblclick", () => addEvent(dayElement.id));
+    });
+
+</script>
+
+</body>
+</html>
