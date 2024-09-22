@@ -173,6 +173,19 @@
             border-radius: 8px;
             flex: 1;
         }
+        /* Style for color picker */
+        .color-picker-container {
+            position: fixed;
+            bottom: 10px;
+            right: 10px;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+        }
+        .color-picker-label {
+            margin-right: 10px;
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
@@ -222,6 +235,12 @@
 
 <div class="overlay" id="overlay"></div>
 
+<!-- Color Picker -->
+<div class="color-picker-container">
+    <label class="color-picker-label" for="colorPicker">Change Color: </label>
+    <input type="color" id="colorPicker" value="#000000">
+</div>
+
 <script>
     const calendar = document.getElementById("calendar");
     const currentMonthEl = document.getElementById("current-month");
@@ -230,6 +249,7 @@
     const overlay = document.getElementById("overlay");
     const eventList = document.getElementById("eventList");
     const upcomingEvents = [document.getElementById("upcoming1"), document.getElementById("upcoming2"), document.getElementById("upcoming3")];
+    const colorPicker = document.getElementById("colorPicker");
 
     let currentMonth = new Date().getMonth();
     let currentYear = new Date().getFullYear();
@@ -393,6 +413,17 @@
         }
         renderCalendar();
     }
+
+    // Change all black elements' color
+    colorPicker.addEventListener('input', (e) => {
+        const newColor = e.target.value;
+        const elementsToChange = document.querySelectorAll('.month-indicator, .day-indicator, .arrow-button, .event-list button, .modal-buttons button, .upcoming-event');
+        
+        elementsToChange.forEach(el => {
+            el.style.backgroundColor = newColor;
+            el.style.borderColor = newColor;
+        });
+    });
 
     renderCalendar();
 </script>
