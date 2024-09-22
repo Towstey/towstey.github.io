@@ -41,9 +41,12 @@
             display: none;
             flex-direction: column;
             overflow: hidden;
+            max-height: 0;
+            transition: max-height 0.5s ease-in-out;
         }
         .day.expanded .events {
             display: flex;
+            max-height: 500px; /* Smooth expand */
         }
         .header {
             background-color: black;
@@ -141,7 +144,7 @@
         .overlay.active {
             display: block;
         }
-        /* New Modal for Adding Class */
+        /* Modal for Adding Class */
         .add-class-modal {
             display: none;
             position: fixed;
@@ -186,11 +189,11 @@
     <!-- Schedule for Week 1 -->
     <div class="schedule" id="schedule1">
         <div class="header" contenteditable="true" id="header1">NAME</div>
-        <div class="day" id="monday1" onclick="toggleExpand('monday1')">Monday <div class="events"></div></div>
-        <div class="day" id="tuesday1" onclick="toggleExpand('tuesday1')">Tuesday <div class="events"></div></div>
-        <div class="day" id="wednesday1" onclick="toggleExpand('wednesday1')">Wednesday <div class="events"></div></div>
-        <div class="day" id="thursday1" onclick="toggleExpand('thursday1')">Thursday <div class="events"></div></div>
-        <div class="day" id="friday1" onclick="toggleExpand('friday1')">Friday <div class="events"></div></div>
+        <div class="day" id="monday1" onclick="openModal('monday1')">Monday <div class="events"></div></div>
+        <div class="day" id="tuesday1" onclick="openModal('tuesday1')">Tuesday <div class="events"></div></div>
+        <div class="day" id="wednesday1" onclick="openModal('wednesday1')">Wednesday <div class="events"></div></div>
+        <div class="day" id="thursday1" onclick="openModal('thursday1')">Thursday <div class="events"></div></div>
+        <div class="day" id="friday1" onclick="openModal('friday1')">Friday <div class="events"></div></div>
         <div class="color-change-btn">
             <button class="color-picker-button" id="colorPickerButton1">Change Color</button>
             <input type="color" id="colorPicker1" value="#000000">
@@ -200,11 +203,11 @@
     <!-- Schedule for Week 2 -->
     <div class="schedule" id="schedule2">
         <div class="header" contenteditable="true" id="header2">NAME</div>
-        <div class="day" id="monday2" onclick="toggleExpand('monday2')">Monday <div class="events"></div></div>
-        <div class="day" id="tuesday2" onclick="toggleExpand('tuesday2')">Tuesday <div class="events"></div></div>
-        <div class="day" id="wednesday2" onclick="toggleExpand('wednesday2')">Wednesday <div class="events"></div></div>
-        <div class="day" id="thursday2" onclick="toggleExpand('thursday2')">Thursday <div class="events"></div></div>
-        <div class="day" id="friday2" onclick="toggleExpand('friday2')">Friday <div class="events"></div></div>
+        <div class="day" id="monday2" onclick="openModal('monday2')">Monday <div class="events"></div></div>
+        <div class="day" id="tuesday2" onclick="openModal('tuesday2')">Tuesday <div class="events"></div></div>
+        <div class="day" id="wednesday2" onclick="openModal('wednesday2')">Wednesday <div class="events"></div></div>
+        <div class="day" id="thursday2" onclick="openModal('thursday2')">Thursday <div class="events"></div></div>
+        <div class="day" id="friday2" onclick="openModal('friday2')">Friday <div class="events"></div></div>
         <div class="color-change-btn">
             <button class="color-picker-button" id="colorPickerButton2">Change Color</button>
             <input type="color" id="colorPicker2" value="#000000">
@@ -212,14 +215,14 @@
     </div>
 </div>
 
-<!-- Modal for Viewing and Editing Classes -->
+<!-- Modal for Viewing and Managing Classes -->
 <div class="modal" id="classModal">
     <div id="classList"></div>
     <button class="add-event-btn" onclick="openAddClassModal()">Add Class</button>
     <button class="back-btn" onclick="closeModal()">Back</button>
 </div>
 
-<!-- Modal for Adding Class -->
+<!-- Modal for Adding a Class -->
 <div class="add-class-modal" id="addClassModal">
     <input type="text" class="input-field" id="className" placeholder="Class Name">
     <input type="text" class="input-field" id="classTime" placeholder="Class Time">
@@ -230,7 +233,7 @@
 <div class="overlay" id="overlay"></div>
 
 <script>
-    let selectedDay = null; // Track which day is currently selected for modal
+    let selectedDay = null; // Track the currently selected day
 
     // Apply color changes for schedule 1
     const colorPickerButton1 = document.getElementById("colorPickerButton1");
@@ -261,12 +264,6 @@
         header2.style.backgroundColor = newColor;
         colorPickerButton2.style.backgroundColor = newColor;
     });
-
-    // Toggle expand and collapse for day cells to show events
-    function toggleExpand(dayId) {
-        const dayElement = document.getElementById(dayId);
-        dayElement.classList.toggle("expanded");
-    }
 
     // Open modal and load classes for the selected day
     function openModal(dayId) {
@@ -302,8 +299,6 @@
         document.getElementById("classModal").classList.remove("active");
         document.getElementById("overlay").classList.remove("active");
     }
-
-    document.getElementById("overlay").addEventListener("click", closeModal);
 
     // Open the modal for adding a new class
     function openAddClassModal() {
