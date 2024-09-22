@@ -27,11 +27,15 @@
             background-color: white;
             color: black;
         }
-        .workout-box, .new-workout, .view-workout, .workout-day, .no-workout {
+        .workout-box, .new-workout, .view-workout, .workout-day {
             display: none;
             background-color: rgba(0, 0, 0, 0.8);
             padding: 20px;
             border-radius: 10px;
+        }
+        .no-workout {
+            display: block;
+            text-align: center;
         }
         .form-row {
             margin-bottom: 15px;
@@ -66,9 +70,6 @@
         }
         .delete-edit-start {
             cursor: pointer;
-        }
-        .day-complete {
-            background-color: green;
         }
     </style>
     <title>Workout Tracker</title>
@@ -113,8 +114,25 @@
     let workouts = [];
     let currentDay = 0;
 
+    // Check if there are workouts and show the appropriate buttons
+    function checkWorkouts() {
+        if (workouts.length === 0) {
+            document.getElementById('start-box').style.display = 'none';
+            document.getElementById('no-workout-box').style.display = 'block';
+        } else {
+            document.getElementById('start-box').style.display = 'block';
+            document.getElementById('no-workout-box').style.display = 'none';
+        }
+    }
+
     document.getElementById('new-workout-btn').addEventListener('click', () => {
         document.getElementById('start-box').style.display = 'none';
+        document.getElementById('new-workout-box').style.display = 'block';
+        createWorkoutDays();
+    });
+
+    document.getElementById('no-workout-btn').addEventListener('click', () => {
+        document.getElementById('no-workout-box').style.display = 'none';
         document.getElementById('new-workout-box').style.display = 'block';
         createWorkoutDays();
     });
@@ -175,6 +193,7 @@
         alert('Workout saved!');
         document.getElementById('new-workout-box').style.display = 'none';
         document.getElementById('start-box').style.display = 'block';
+        checkWorkouts();
     });
 
     function showWorkoutTable() {
@@ -219,6 +238,7 @@
     function deleteWorkout(index) {
         workouts.splice(index, 1);
         showWorkoutTable();
+        checkWorkouts();
     }
 
     function editWorkout(index) {
@@ -228,6 +248,9 @@
     document.getElementById('repeat-workout-btn').addEventListener('click', () => {
         alert('Workout has been repeated for the next week!');
     });
+
+    // Run this on load to check for existing workouts
+    checkWorkouts();
 </script>
 
 </body>
