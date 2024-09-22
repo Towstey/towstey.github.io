@@ -173,18 +173,19 @@
             border-radius: 8px;
             flex: 1;
         }
-        /* Style for color picker */
-        .color-picker-container {
-            position: fixed;
-            bottom: 10px;
-            right: 10px;
-            z-index: 1000;
+        /* Style for color change button */
+        .color-change-btn {
+            margin-top: 20px;
             display: flex;
-            align-items: center;
+            justify-content: center;
         }
-        .color-picker-label {
-            margin-right: 10px;
-            font-weight: bold;
+        .color-picker-button {
+            background-color: black; /* Default color (black) */
+            color: white;
+            border: 2px solid black;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
         }
     </style>
 </head>
@@ -233,13 +234,11 @@
     <div class="upcoming-event" id="upcoming3"></div>
 </div>
 
-<div class="overlay" id="overlay"></div>
-
-<!-- Color Picker -->
-<div class="color-picker-container">
-    <label class="color-picker-label" for="colorPicker">Change Color: </label>
-    <input type="color" id="colorPicker" value="#000000">
+<div class="color-change-btn">
+    <button class="color-picker-button" id="colorPickerButton">Change Color</button>
 </div>
+
+<div class="overlay" id="overlay"></div>
 
 <script>
     const calendar = document.getElementById("calendar");
@@ -249,13 +248,35 @@
     const overlay = document.getElementById("overlay");
     const eventList = document.getElementById("eventList");
     const upcomingEvents = [document.getElementById("upcoming1"), document.getElementById("upcoming2"), document.getElementById("upcoming3")];
-    const colorPicker = document.getElementById("colorPicker");
+    const colorPickerButton = document.getElementById("colorPickerButton");
 
     let currentMonth = new Date().getMonth();
     let currentYear = new Date().getFullYear();
     let events = JSON.parse(localStorage.getItem('events')) || {};
     let selectedDay = null;
     let selectedEventIndex = null;
+    let currentColor = localStorage.getItem('themeColor') || '#000000'; // Default color black
+
+    // Apply the current color theme to all black elements
+    function applyThemeColor(color) {
+        const elementsToChange = document.querySelectorAll('.month-indicator, .day-indicator, .arrow-button, .event-list button, .modal-buttons button, .upcoming-event');
+        
+        elementsToChange.forEach(el => {
+            el.style.backgroundColor = color;
+            el.style.borderColor = color;
+        });
+        colorPickerButton.style.backgroundColor = color; // Also change the button color
+        localStorage.setItem('themeColor', color); // Save to localStorage
+    }
+
+    // Event listener for color change button
+    colorPickerButton.addEventListener('click', () => {
+        const newColor = prompt("Please enter a color code (e.g., #ff0000):", currentColor);
+        if (newColor) {
+            currentColor = newColor;
+            applyThemeColor(currentColor);
+        }
+    });
 
     function renderCalendar() {
         const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
@@ -414,16 +435,8 @@
         renderCalendar();
     }
 
-    // Change all black elements' color
-    colorPicker.addEventListener('input', (e) => {
-        const newColor = e.target.value;
-        const elementsToChange = document.querySelectorAll('.month-indicator, .day-indicator, .arrow-button, .event-list button, .modal-buttons button, .upcoming-event');
-        
-        elementsToChange.forEach(el => {
-            el.style.backgroundColor = newColor;
-            el.style.borderColor = newColor;
-        });
-    });
+    // Apply the saved theme color when the page loads
+    applyThemeColor(currentColor);
 
     renderCalendar();
 </script>
