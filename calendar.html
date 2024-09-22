@@ -187,6 +187,10 @@
             border-radius: 8px;
             cursor: pointer;
         }
+        /* Hidden color picker */
+        #colorPicker {
+            display: none;
+        }
     </style>
 </head>
 <body>
@@ -236,6 +240,7 @@
 
 <div class="color-change-btn">
     <button class="color-picker-button" id="colorPickerButton">Change Color</button>
+    <input type="color" id="colorPicker" value="#000000">
 </div>
 
 <div class="overlay" id="overlay"></div>
@@ -249,6 +254,7 @@
     const eventList = document.getElementById("eventList");
     const upcomingEvents = [document.getElementById("upcoming1"), document.getElementById("upcoming2"), document.getElementById("upcoming3")];
     const colorPickerButton = document.getElementById("colorPickerButton");
+    const colorPicker = document.getElementById("colorPicker");
 
     let currentMonth = new Date().getMonth();
     let currentYear = new Date().getFullYear();
@@ -269,13 +275,16 @@
         localStorage.setItem('themeColor', color); // Save to localStorage
     }
 
-    // Event listener for color change button
+    // Show the color picker when the button is clicked
     colorPickerButton.addEventListener('click', () => {
-        const newColor = prompt("Please enter a color code (e.g., #ff0000):", currentColor);
-        if (newColor) {
-            currentColor = newColor;
-            applyThemeColor(currentColor);
-        }
+        colorPicker.click();
+    });
+
+    // Listen for changes in the color picker
+    colorPicker.addEventListener('input', (e) => {
+        const newColor = e.target.value;
+        currentColor = newColor;
+        applyThemeColor(newColor);
     });
 
     function renderCalendar() {
