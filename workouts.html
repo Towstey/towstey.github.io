@@ -98,14 +98,22 @@
             text-align: center;
             padding: 10px;
         }
+        /* Center the button */
+        .center-button {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
     </style>
     <title>Workout Tracker</title>
 </head>
 <body>
 
 <div class="container">
-    <!-- Functional title as a button -->
-    <div class="title-box button" id="new-workout-btn">Create New Workout</div>
+    <!-- Centered Create New Workout Button -->
+    <div class="center-button">
+        <div class="title-box button" id="new-workout-btn">Create New Workout</div>
+    </div>
     
     <div class="box new-workout" id="new-workout-box">
         <div class="title-box"><h2>Create New Workout</h2></div>
@@ -139,31 +147,26 @@
     let workouts = [];
     let currentDay = 0;
 
-    // Check if there are workouts and show the appropriate buttons
-    function checkWorkouts() {
-        document.getElementById('new-workout-box').style.display = 'none';
-    }
-
+    // Hide the "Create New Workout" button after it's clicked and show the form
     document.getElementById('new-workout-btn').addEventListener('click', () => {
+        document.getElementById('new-workout-btn').style.display = 'none';
         document.getElementById('new-workout-box').style.display = 'block';
         createWorkoutDays();
     });
 
-    document.getElementById('view-workout-btn').addEventListener('click', () => {
-        showWorkoutList();
-        document.getElementById('view-workout-box').style.display = 'block';
-    });
-
     document.getElementById('back-to-start').addEventListener('click', () => {
         document.getElementById('new-workout-box').style.display = 'none';
+        document.getElementById('new-workout-btn').style.display = 'block'; // Show the button again when going back
     });
 
     document.getElementById('back-to-start-view').addEventListener('click', () => {
         document.getElementById('view-workout-box').style.display = 'none';
+        document.getElementById('new-workout-btn').style.display = 'block'; // Show the button again
     });
 
     document.getElementById('back-to-view').addEventListener('click', () => {
         document.getElementById('workout-day-box').style.display = 'none';
+        document.getElementById('view-workout-box').style.display = 'block';
     });
 
     function createWorkoutDays() {
@@ -218,7 +221,7 @@
         workouts.push(workoutPlan);
         alert('Workout saved!');
         document.getElementById('new-workout-box').style.display = 'none';
-        checkWorkouts();
+        document.getElementById('new-workout-btn').style.display = 'block'; // Show the button again after saving
     });
 
     function showWorkoutList() {
@@ -290,6 +293,10 @@
 
     function editWorkout(index) {
         alert('Edit feature coming soon!');
+    }
+
+    function checkWorkouts() {
+        document.getElementById('new-workout-box').style.display = 'none';
     }
 
     // Run this on load to check for existing workouts
