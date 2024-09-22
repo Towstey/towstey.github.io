@@ -71,10 +71,6 @@
             border-radius: 8px;
             cursor: pointer;
         }
-        /* Hidden color picker */
-        #colorPicker {
-            display: none;
-        }
         .add-event-btn {
             margin-top: 5px;
             background-color: black;
@@ -144,7 +140,7 @@
         .overlay.active {
             display: block;
         }
-        /* Modal for Adding Class */
+        /* Modal for Adding or Editing Class */
         .add-class-modal {
             display: none;
             position: fixed;
@@ -172,14 +168,23 @@
         .input-field::placeholder {
             text-align: center;
         }
-        .back-btn {
-            background-color: #333;
+        .centered-buttons {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        .centered-buttons button {
+            margin-top: 10px;
+            padding: 10px 20px;
+            background-color: black;
             color: white;
-            padding: 8px 15px;
+            border: 2px solid black;
             border-radius: 8px;
             cursor: pointer;
-            display: inline-block;
-            margin-top: 10px;
+            width: 100%;
+            max-width: 100px;
+            text-align: center;
         }
     </style>
 </head>
@@ -219,21 +224,24 @@
 <div class="modal" id="classModal">
     <div id="classList"></div>
     <button class="add-event-btn" onclick="openAddClassModal()">Add Class</button>
-    <button class="back-btn" onclick="closeModal()">Back</button>
+    <button class="back-btn centered-buttons" onclick="closeModal()">Back</button>
 </div>
 
-<!-- Modal for Adding a Class -->
+<!-- Modal for Adding or Editing a Class -->
 <div class="add-class-modal" id="addClassModal">
     <input type="text" class="input-field" id="className" placeholder="Class Name">
     <input type="text" class="input-field" id="classTime" placeholder="Class Time">
-    <button class="add-event-btn" onclick="submitClass()">Submit</button>
-    <button class="back-btn" onclick="closeAddClassModal()">Back</button>
+    <div class="centered-buttons">
+        <button class="submit-btn" onclick="submitClass()">Submit</button>
+        <button class="back-btn" onclick="closeAddClassModal()">Back</button>
+    </div>
 </div>
 
 <div class="overlay" id="overlay"></div>
 
 <script>
     let selectedDay = null; // Track the currently selected day
+    let themeColor = '#000000'; // Track the current theme color
 
     // Apply color changes for schedule 1
     const colorPickerButton1 = document.getElementById("colorPickerButton1");
@@ -246,8 +254,10 @@
 
     colorPicker1.addEventListener("input", (e) => {
         const newColor = e.target.value;
+        themeColor = newColor; // Save the current theme color
         header1.style.backgroundColor = newColor;
         colorPickerButton1.style.backgroundColor = newColor;
+        colorPickerButton1.style.borderColor = newColor; // Keep border consistent
     });
 
     // Apply color changes for schedule 2
@@ -261,8 +271,10 @@
 
     colorPicker2.addEventListener("input", (e) => {
         const newColor = e.target.value;
+        themeColor = newColor; // Save the current theme color
         header2.style.backgroundColor = newColor;
         colorPickerButton2.style.backgroundColor = newColor;
+        colorPickerButton2.style.borderColor = newColor; // Keep border consistent
     });
 
     // Open modal and load classes for the selected day
@@ -273,6 +285,10 @@
 
         const eventsDiv = document.getElementById(dayId).querySelector(".events");
 
+        // Set modal buttons to match the theme color
+        document.querySelector('.add-event-btn').style.backgroundColor = themeColor;
+        document.querySelector('.back-btn').style.backgroundColor = themeColor;
+
         if (eventsDiv.children.length === 0) {
             classList.innerHTML = '<p>No classes. Click Add to create one.</p>';
         } else {
@@ -282,7 +298,7 @@
                 classItem.innerHTML = `
                     <span>${classEvent.innerText}</span>
                     <div class="buttons">
-                        <button onclick="editEvent(${index})">Edit</button>
+                        <button onclick="openEditClassModal(${index})">Edit</button>
                         <button onclick="deleteEvent(${index})">Delete</button>
                     </div>
                 `;
@@ -302,17 +318,33 @@
 
     // Open the modal for adding a new class
     function openAddClassModal() {
+        resetClassInputs(); // Reset the input fields
         document.getElementById("addClassModal").classList.add("active");
         document.getElementById("classModal").classList.remove("active");
+        setModalTheme();
     }
 
-    // Close add class modal
+    // Open the modal for editing a class
+    function openEditClassModal(index) {
+        const eventsDiv = document.getElementById(selectedDay).querySelector(".events");
+        const currentEvent = eventsDiv.children[index];
+
+        // Pre-fill the modal inputs with the existing class info
+        document.getElementById("className").value = currentEvent.innerText.split(" - ")[0];
+        document.getElementById("classTime").value = currentEvent.innerText.split(" - ")[1];
+
+        document.getElementById("addClassModal").classList.add("active");
+        document.getElementById("classModal").classList.remove("active");
+        setModalTheme();
+    }
+
+    // Close add/edit class modal
     function closeAddClassModal() {
         document.getElementById("addClassModal").classList.remove("active");
         document.getElementById("classModal").classList.add("active");
     }
 
-    // Add event
+    // Add or edit event
     function submitClass() {
         const className = document.getElementById("className").value;
         const classTime = document.getElementById("classTime").value;
@@ -327,21 +359,6 @@
         }
     }
 
-    // Edit event
-    function editEvent(index) {
-        const eventsDiv = document.getElementById(selectedDay).querySelector(".events");
-        const currentEvent = eventsDiv.children[index];
-
-        const className = prompt("Edit class name:", currentEvent.innerText.split(" - ")[0]);
-        const classTime = prompt("Edit class time:", currentEvent.innerText.split(" - ")[1]);
-
-        if (className && classTime) {
-            currentEvent.innerText = `${className} - ${classTime}`;
-        }
-
-        closeModal();
-    }
-
     // Delete event
     function deleteEvent(index) {
         const eventsDiv = document.getElementById(selectedDay).querySelector(".events");
@@ -349,6 +366,22 @@
         closeModal();
     }
 
+    // Reset the input fields when adding or editing a class
+    function resetClassInputs() {
+        document.getElementById("className").value = '';
+        document.getElementById("classTime").value = '';
+    }
+
+    // Set the theme for the modals
+    function setModalTheme() {
+        const submitBtn = document.querySelector('.submit-btn');
+        const backBtn = document.querySelector('.back-btn');
+
+        submitBtn.style.backgroundColor = themeColor;
+        submitBtn.style.borderColor = themeColor;
+        backBtn.style.backgroundColor = themeColor;
+        backBtn.style.borderColor = themeColor;
+    }
 </script>
 
 </body>
