@@ -35,14 +35,17 @@
         }
         .day:hover {
             background-color: #f0f0f0;
-            height: auto;
         }
         .day .events {
             display: none;
             flex-direction: column;
+            overflow: hidden;
+            max-height: 0;
+            transition: max-height 0.5s ease-in-out;
         }
-        .day:hover .events {
+        .day.expanded .events {
             display: flex;
+            max-height: 500px; /* Allow room for expansion */
         }
         .header {
             background-color: black;
@@ -79,6 +82,67 @@
             border: none;
             cursor: pointer;
         }
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            width: 400px;
+        }
+        .modal.active {
+            display: block;
+        }
+        .modal .class-item {
+            display: flex;
+            justify-content: space-between;
+            background-color: black;
+            color: white;
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+        .modal .class-item .buttons {
+            display: flex;
+            gap: 10px;
+        }
+        .modal .class-item button {
+            padding: 5px;
+            background-color: black;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        .modal .add-event-btn {
+            margin-top: 20px;
+            background-color: black;
+            color: white;
+            padding: 10px;
+            border: none;
+            cursor: pointer;
+            width: 100%;
+            text-align: center;
+            border-radius: 8px;
+        }
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+        }
+        .overlay.active {
+            display: block;
+        }
     </style>
 </head>
 <body>
@@ -87,11 +151,11 @@
     <!-- Schedule for Week 1 -->
     <div class="schedule" id="schedule1">
         <div class="header" contenteditable="true" id="header1">NAME</div>
-        <div class="day" id="monday1">Monday <div class="events"></div></div>
-        <div class="day" id="tuesday1">Tuesday <div class="events"></div></div>
-        <div class="day" id="wednesday1">Wednesday <div class="events"></div></div>
-        <div class="day" id="thursday1">Thursday <div class="events"></div></div>
-        <div class="day" id="friday1">Friday <div class="events"></div></div>
+        <div class="day" id="monday1" onclick="openModal('monday1')">Monday <div class="events"></div></div>
+        <div class="day" id="tuesday1" onclick="openModal('tuesday1')">Tuesday <div class="events"></div></div>
+        <div class="day" id="wednesday1" onclick="openModal('wednesday1')">Wednesday <div class="events"></div></div>
+        <div class="day" id="thursday1" onclick="openModal('thursday1')">Thursday <div class="events"></div></div>
+        <div class="day" id="friday1" onclick="openModal('friday1')">Friday <div class="events"></div></div>
         <div class="color-change-btn">
             <button class="color-picker-button" id="colorPickerButton1">Change Color</button>
             <input type="color" id="colorPicker1" value="#000000">
@@ -101,11 +165,11 @@
     <!-- Schedule for Week 2 -->
     <div class="schedule" id="schedule2">
         <div class="header" contenteditable="true" id="header2">NAME</div>
-        <div class="day" id="monday2">Monday <div class="events"></div></div>
-        <div class="day" id="tuesday2">Tuesday <div class="events"></div></div>
-        <div class="day" id="wednesday2">Wednesday <div class="events"></div></div>
-        <div class="day" id="thursday2">Thursday <div class="events"></div></div>
-        <div class="day" id="friday2">Friday <div class="events"></div></div>
+        <div class="day" id="monday2" onclick="openModal('monday2')">Monday <div class="events"></div></div>
+        <div class="day" id="tuesday2" onclick="openModal('tuesday2')">Tuesday <div class="events"></div></div>
+        <div class="day" id="wednesday2" onclick="openModal('wednesday2')">Wednesday <div class="events"></div></div>
+        <div class="day" id="thursday2" onclick="openModal('thursday2')">Thursday <div class="events"></div></div>
+        <div class="day" id="friday2" onclick="openModal('friday2')">Friday <div class="events"></div></div>
         <div class="color-change-btn">
             <button class="color-picker-button" id="colorPickerButton2">Change Color</button>
             <input type="color" id="colorPicker2" value="#000000">
@@ -113,7 +177,17 @@
     </div>
 </div>
 
+<!-- Modal for Adding/Editing Classes -->
+<div class="modal" id="classModal">
+    <div id="classList"></div>
+    <button class="add-event-btn" onclick="addEvent()">ADD</button>
+</div>
+
+<div class="overlay" id="overlay"></div>
+
 <script>
+    let selectedDay = null; // Track which day is currently selected for modal
+
     // Apply color changes for schedule 1
     const colorPickerButton1 = document.getElementById("colorPickerButton1");
     const colorPicker1 = document.getElementById("colorPicker1");
@@ -144,23 +218,79 @@
         colorPickerButton2.style.backgroundColor = newColor;
     });
 
-    // Functionality to add events dynamically
-    function addEvent(dayElementId) {
-        const dayElement = document.getElementById(dayElementId);
-        const eventTitle = prompt("Enter the class and time (Format: Class - Time):");
+    // Open modal and load classes for the selected day
+    function openModal(dayId) {
+        selectedDay = dayId;
+        const classList = document.getElementById("classList");
+        classList.innerHTML = ''; // Clear existing content
 
-        if (eventTitle) {
-            const eventsDiv = dayElement.querySelector(".events");
-            const eventItem = document.createElement("div");
-            eventItem.innerText = eventTitle;
-            eventsDiv.appendChild(eventItem);
+        const eventsDiv = document.getElementById(dayId).querySelector(".events");
+
+        if (eventsDiv.children.length === 0) {
+            classList.innerHTML = '<p>No classes. Click Add to create one.</p>';
+        } else {
+            Array.from(eventsDiv.children).forEach((classEvent, index) => {
+                const classItem = document.createElement("div");
+                classItem.classList.add("class-item");
+                classItem.innerHTML = `
+                    <span>${classEvent.innerText}</span>
+                    <div class="buttons">
+                        <button onclick="editEvent(${index})">Edit</button>
+                        <button onclick="deleteEvent(${index})">Delete</button>
+                    </div>
+                `;
+                classList.appendChild(classItem);
+            });
+        }
+
+        document.getElementById("classModal").classList.add("active");
+        document.getElementById("overlay").classList.add("active");
+    }
+
+    // Close modal
+    function closeModal() {
+        document.getElementById("classModal").classList.remove("active");
+        document.getElementById("overlay").classList.remove("active");
+    }
+
+    document.getElementById("overlay").addEventListener("click", closeModal);
+
+    // Add event
+    function addEvent() {
+        const className = prompt("Enter class name:");
+        const classTime = prompt("Enter class time:");
+
+        if (className && classTime) {
+            const newEvent = document.createElement("div");
+            newEvent.innerText = `${className} - ${classTime}`;
+            newEvent.classList.add("event-item");
+            document.getElementById(selectedDay).querySelector(".events").appendChild(newEvent);
+
+            closeModal();
         }
     }
 
-    // Add event listeners to days for adding events
-    document.querySelectorAll(".day").forEach(dayElement => {
-        dayElement.addEventListener("dblclick", () => addEvent(dayElement.id));
-    });
+    // Edit event
+    function editEvent(index) {
+        const eventsDiv = document.getElementById(selectedDay).querySelector(".events");
+        const currentEvent = eventsDiv.children[index];
+
+        const className = prompt("Edit class name:", currentEvent.innerText.split(" - ")[0]);
+        const classTime = prompt("Edit class time:", currentEvent.innerText.split(" - ")[1]);
+
+        if (className && classTime) {
+            currentEvent.innerText = `${className} - ${classTime}`;
+        }
+
+        closeModal();
+    }
+
+    // Delete event
+    function deleteEvent(index) {
+        const eventsDiv = document.getElementById(selectedDay).querySelector(".events");
+        eventsDiv.children[index].remove();
+        closeModal();
+    }
 
 </script>
 
