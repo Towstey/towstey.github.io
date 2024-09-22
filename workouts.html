@@ -71,6 +71,14 @@
         .delete-edit-start {
             cursor: pointer;
         }
+        .back-button {
+            background-color: red;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+            display: inline-block;
+        }
     </style>
     <title>Workout Tracker</title>
 </head>
@@ -89,24 +97,30 @@
     <div class="new-workout" id="new-workout-box">
         <h2>Create New Workout</h2>
         <form id="new-workout-form">
+            <div class="form-row">
+                <input type="text" id="workout-name" placeholder="Workout Name">
+            </div>
             <div id="workout-days"></div>
             <div class="button" id="add-day-btn">Add Exercise</div>
             <div class="button" id="save-workout-btn">Save Workout</div>
+            <div class="back-button" id="back-to-start">Back</div>
         </form>
     </div>
 
     <div class="view-workout" id="view-workout-box">
-        <h2>Your Workout Plan</h2>
-        <table class="week-table" id="workout-table">
-            <!-- Table will be generated dynamically -->
-        </table>
-        <div class="button" id="repeat-workout-btn">Repeat Workout</div>
+        <h2>Your Workouts</h2>
+        <div id="workout-list"></div>
+        <div class="back-button" id="back-to-start-view">Back</div>
     </div>
 
     <div class="workout-day" id="workout-day-box">
         <h2>Today's Exercises</h2>
         <div id="workout-day-content"></div>
+        <div class="form-row">
+            <input type="number" id="rest-time" placeholder="Rest Time (seconds)">
+        </div>
         <div class="button" id="complete-day-btn">Complete Day</div>
+        <div class="back-button" id="back-to-view">Back</div>
     </div>
 </div>
 
@@ -138,11 +152,24 @@
     });
 
     document.getElementById('view-workout-btn').addEventListener('click', () => {
-        if (workouts.length > 0) {
-            showWorkoutTable();
-            document.getElementById('start-box').style.display = 'none';
-            document.getElementById('view-workout-box').style.display = 'block';
-        }
+        showWorkoutList();
+        document.getElementById('start-box').style.display = 'none';
+        document.getElementById('view-workout-box').style.display = 'block';
+    });
+
+    document.getElementById('back-to-start').addEventListener('click', () => {
+        document.getElementById('new-workout-box').style.display = 'none';
+        document.getElementById('start-box').style.display = 'block';
+    });
+
+    document.getElementById('back-to-start-view').addEventListener('click', () => {
+        document.getElementById('view-workout-box').style.display = 'none';
+        document.getElementById('start-box').style.display = 'block';
+    });
+
+    document.getElementById('back-to-view').addEventListener('click', () => {
+        document.getElementById('workout-day-box').style.display = 'none';
+        document.getElementById('view-workout-box').style.display = 'block';
     });
 
     function createWorkoutDays() {
@@ -177,7 +204,12 @@
     }
 
     document.getElementById('save-workout-btn').addEventListener('click', () => {
-        const workoutPlan = [];
+        const workoutName = document.getElementById('workout-name').value;
+        if (!workoutName) {
+            alert('Please enter a workout name!');
+            return;
+        }
+        const workoutPlan = { name: workoutName, days: [], currentDay: 0, completedDays: [] };
         const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
         days.forEach(day => {
             const exercises = [];
@@ -187,7 +219,7 @@
                 const reps = row.querySelector('.exercise-reps').value;
                 exercises.push({ name, sets, reps });
             });
-            workoutPlan.push({ day, exercises });
+            workoutPlan.days.push({ day, exercises });
         });
         workouts.push(workoutPlan);
         alert('Workout saved!');
@@ -196,22 +228,21 @@
         checkWorkouts();
     });
 
-    function showWorkoutTable() {
-        const table = document.getElementById('workout-table');
-        table.innerHTML = '<tr><th>Day</th><th>Exercises</th><th>Options</th></tr>';
+    function showWorkoutList() {
+        const workoutList = document.getElementById('workout-list');
+        workoutList.innerHTML = '';
         workouts.forEach((workout, index) => {
-            workout.forEach(day => {
-                const row = document.createElement('tr');
-                row.innerHTML = `<td>${day.day}</td><td>${day.exercises.map(ex => `${ex.name} - ${ex.sets} sets x ${ex.reps} reps`).join(', ')}</td><td><span class="delete-edit-start" onclick="deleteWorkout(${index})">Delete</span> | <span class="delete-edit-start" onclick="editWorkout(${index})">Edit</span> | <span class="delete-edit-start" onclick="startWorkout(${index})">Start/Continue</span></td>`;
-                table.appendChild(row);
-            });
+            const workoutDiv = document.createElement('div');
+            workoutDiv.innerHTML = `<strong>${workout.name}</strong> - Completed: ${workout.completedDays.length}/5 days <br> <span class="delete-edit-start" onclick="deleteWorkout(${index})">Delete</span> | <span class="delete-edit-start" onclick="editWorkout(${index})">Edit</span> | <span class="delete-edit-start" onclick="startWorkout(${index})">Start/Continue</span>`;
+            workoutList.appendChild(workoutDiv);
         });
     }
 
     function startWorkout(index) {
-        const dayWorkout = workouts[index][currentDay];
+        const workout = workouts[index];
+        const dayWorkout = workout.days[workout.currentDay];
         const workoutDayContent = document.getElementById('workout-day-content');
-        workoutDayContent.innerHTML = '';
+        workoutDayContent.innerHTML = `<h3>${dayWorkout.day}</h3>`;
         dayWorkout.exercises.forEach(exercise => {
             const exerciseItem = document.createElement('div');
             exerciseItem.classList.add('form-row');
@@ -223,12 +254,15 @@
     }
 
     document.getElementById('complete-day-btn').addEventListener('click', () => {
-        currentDay++;
-        if (currentDay >= 5) {
+        const workoutIndex = workouts.findIndex(w => w.currentDay === currentDay);
+        const workout = workouts[workoutIndex];
+        workout.completedDays.push(workout.currentDay);
+        workout.currentDay++;
+        if (workout.currentDay >= 5) {
             alert('Workout Complete!');
             document.getElementById('workout-day-box').style.display = 'none';
             document.getElementById('start-box').style.display = 'block';
-            currentDay = 0;
+            workout.currentDay = 0;
         } else {
             document.getElementById('workout-day-box').style.display = 'none';
             document.getElementById('view-workout-box').style.display = 'block';
@@ -237,17 +271,13 @@
 
     function deleteWorkout(index) {
         workouts.splice(index, 1);
-        showWorkoutTable();
+        showWorkoutList();
         checkWorkouts();
     }
 
     function editWorkout(index) {
         alert('Edit feature coming soon!');
     }
-
-    document.getElementById('repeat-workout-btn').addEventListener('click', () => {
-        alert('Workout has been repeated for the next week!');
-    });
 
     // Run this on load to check for existing workouts
     checkWorkouts();
