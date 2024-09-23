@@ -5,23 +5,30 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>School Schedule</title>
     <style>
-        /* Styles (Same as before) */
+        /* Updated Body to Transparent */
         body {
             font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
+            background-color: transparent; /* Make the background transparent */
             display: flex;
             justify-content: center;
             padding: 20px;
         }
+
         .schedule-container {
             display: flex;
             gap: 50px;
         }
+
         .schedule {
             display: flex;
             flex-direction: column;
             width: 200px;
+            background-color: white; /* Keep a background color for the schedule boxes */
+            padding: 10px;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Add a shadow for visual distinction */
         }
+
         .header {
             background-color: black;
             color: white;
@@ -33,6 +40,7 @@
             border: 2px solid black;
             margin-bottom: 10px;
         }
+
         .day {
             background-color: white;
             padding: 10px;
@@ -45,21 +53,12 @@
             overflow: hidden;
             margin-bottom: 10px;
         }
+
         .day.expanded {
             background-color: #f0f0f0;
             transition: all 0.5s ease;
         }
-        .day .events {
-            display: none;
-            flex-direction: column;
-            overflow: hidden;
-            max-height: 0;
-            transition: max-height 0.5s ease-in-out;
-        }
-        .day.expanded .events {
-            display: flex;
-            max-height: 500px;
-        }
+
         .class-item-display {
             background-color: white;
             color: black;
@@ -69,11 +68,13 @@
             text-align: center;
             border: 1px solid black;
         }
+
         .color-change-btn {
             display: flex;
             justify-content: center;
             margin-top: 10px;
         }
+
         .color-picker-button {
             background-color: black;
             color: white;
@@ -83,6 +84,7 @@
             cursor: pointer;
             width: 100%;
         }
+
         .add-event-btn, .back-btn {
             margin-top: 5px;
             background-color: black;
@@ -93,6 +95,8 @@
             cursor: pointer;
             width: 100%;
         }
+
+        /* Modal Styles */
         .modal {
             display: none;
             position: fixed;
@@ -106,9 +110,11 @@
             z-index: 1000;
             width: 400px;
         }
+
         .modal.active {
             display: block;
         }
+
         .modal .class-item {
             display: flex;
             justify-content: space-between;
@@ -118,10 +124,12 @@
             border-radius: 8px;
             margin-bottom: 10px;
         }
+
         .modal .class-item .buttons {
             display: flex;
             gap: 10px;
         }
+
         .modal .class-item button {
             padding: 5px;
             background-color: black;
@@ -129,6 +137,7 @@
             border: none;
             cursor: pointer;
         }
+
         .overlay {
             display: none;
             position: fixed;
@@ -139,9 +148,11 @@
             background: rgba(0, 0, 0, 0.5);
             z-index: 999;
         }
+
         .overlay.active {
             display: block;
         }
+
         .add-class-modal {
             display: none;
             position: fixed;
@@ -155,9 +166,11 @@
             z-index: 1000;
             width: 300px;
         }
+
         .add-class-modal.active {
             display: block;
         }
+
         .input-field {
             width: 100%;
             padding: 10px;
@@ -166,15 +179,18 @@
             border: 1px solid #ccc;
             text-align: center;
         }
+
         .input-field::placeholder {
             text-align: center;
         }
+
         .centered-buttons {
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
         }
+
         .centered-buttons button {
             margin-top: 10px;
             padding: 10px 20px;
@@ -261,29 +277,22 @@
 <div class="overlay" id="overlay"></div>
 
 <script>
-    let selectedDay = null; // Track the currently selected day
-    let themeColor = { schedule1: '#000000', schedule2: '#000000' }; // Track the current theme color for both schedules
-    let classes = JSON.parse(localStorage.getItem('classes')) || {}; // Load classes from LocalStorage
+    let selectedDay = null;
+    let themeColor = { schedule1: '#000000', schedule2: '#000000' };
+    let classes = JSON.parse(localStorage.getItem('classes')) || {};
     let names = JSON.parse(localStorage.getItem('names')) || { header1: 'NAME', header2: 'NAME' };
     let colors = JSON.parse(localStorage.getItem('colors')) || { schedule1: '#000000', schedule2: '#000000' };
 
-    // Apply saved color and name data on page load
     window.onload = function() {
-        // Set saved names
         document.getElementById('header1').innerText = names.header1;
         document.getElementById('header2').innerText = names.header2;
-
-        // Set saved colors
         document.getElementById('header1').style.backgroundColor = colors.schedule1;
         document.getElementById('header2').style.backgroundColor = colors.schedule2;
         document.getElementById('colorPickerButton1').style.backgroundColor = colors.schedule1;
         document.getElementById('colorPickerButton2').style.backgroundColor = colors.schedule2;
-
-        // Set theme colors in variables
         themeColor.schedule1 = colors.schedule1;
         themeColor.schedule2 = colors.schedule2;
 
-        // Load saved classes
         for (const [dayId, classList] of Object.entries(classes)) {
             const eventsDiv = document.getElementById(dayId).querySelector(".events");
             classList.forEach(classItem => {
@@ -295,7 +304,6 @@
         }
     };
 
-    // Save names to LocalStorage
     document.getElementById('header1').addEventListener('input', () => {
         names.header1 = document.getElementById('header1').innerText;
         localStorage.setItem('names', JSON.stringify(names));
@@ -306,7 +314,6 @@
         localStorage.setItem('names', JSON.stringify(names));
     });
 
-    // Apply color changes for schedule 1
     const colorPickerButton1 = document.getElementById("colorPickerButton1");
     const colorPicker1 = document.getElementById("colorPicker1");
     const header1 = document.getElementById("header1");
@@ -317,17 +324,14 @@
 
     colorPicker1.addEventListener("input", (e) => {
         const newColor = e.target.value;
-        themeColor.schedule1 = newColor; // Save the theme color for schedule 1
+        themeColor.schedule1 = newColor;
         header1.style.backgroundColor = newColor;
         colorPickerButton1.style.backgroundColor = newColor;
         colors.schedule1 = newColor;
         localStorage.setItem('colors', JSON.stringify(colors));
-
-        // Change class backgrounds to match theme
         updateClassBackgrounds('schedule1', newColor);
     });
 
-    // Apply color changes for schedule 2
     const colorPickerButton2 = document.getElementById("colorPickerButton2");
     const colorPicker2 = document.getElementById("colorPicker2");
     const header2 = document.getElementById("header2");
@@ -338,28 +342,21 @@
 
     colorPicker2.addEventListener("input", (e) => {
         const newColor = e.target.value;
-        themeColor.schedule2 = newColor; // Save the theme color for schedule 2
+        themeColor.schedule2 = newColor;
         header2.style.backgroundColor = newColor;
         colorPickerButton2.style.backgroundColor = newColor;
         colors.schedule2 = newColor;
         localStorage.setItem('colors', JSON.stringify(colors));
-
-        // Change class backgrounds to match theme
         updateClassBackgrounds('schedule2', newColor);
     });
 
-    // Open modal and load classes for the selected day
     function openModal(dayId) {
         selectedDay = dayId;
         const classList = document.getElementById("classList");
-        classList.innerHTML = ''; // Clear existing content
-
+        classList.innerHTML = '';
         const eventsDiv = document.getElementById(dayId).querySelector(".events");
 
-        // Determine the schedule based on the day clicked
         const scheduleId = dayId.includes('1') ? 'schedule1' : 'schedule2';
-
-        // Set modal buttons to match the theme color of the clicked schedule
         document.querySelector('.add-event-btn').style.backgroundColor = themeColor[scheduleId];
         document.querySelector('.back-btn').style.backgroundColor = themeColor[scheduleId];
         document.querySelector('.back-btn').style.border = "none";
@@ -385,41 +382,33 @@
         document.getElementById("overlay").classList.add("active");
     }
 
-    // Close modal
     function closeModal() {
         document.getElementById("classModal").classList.remove("active");
         document.getElementById("overlay").classList.remove("active");
     }
 
-    // Open the modal for adding a new class
     function openAddClassModal() {
-        resetClassInputs(); // Reset the input fields
+        resetClassInputs();
         document.getElementById("addClassModal").classList.add("active");
         document.getElementById("classModal").classList.remove("active");
         setModalTheme();
     }
 
-    // Open the modal for editing a class
     function openEditClassModal(index) {
         const eventsDiv = document.getElementById(selectedDay).querySelector(".events");
         const currentEvent = eventsDiv.children[index];
-
-        // Pre-fill the modal inputs with the existing class info
         document.getElementById("className").value = currentEvent.innerText.split(" - ")[0];
         document.getElementById("classTime").value = currentEvent.innerText.split(" - ")[1];
-
         document.getElementById("addClassModal").classList.add("active");
         document.getElementById("classModal").classList.remove("active");
         setModalTheme();
     }
 
-    // Close add/edit class modal
     function closeAddClassModal() {
         document.getElementById("addClassModal").classList.remove("active");
         document.getElementById("classModal").classList.add("active");
     }
 
-    // Add or edit event
     function submitClass() {
         const className = document.getElementById("className").value;
         const classTime = document.getElementById("classTime").value;
@@ -427,10 +416,9 @@
         if (className && classTime) {
             const newEvent = document.createElement("div");
             newEvent.innerText = `${className} - ${classTime}`;
-            newEvent.classList.add("class-item-display"); // Ensure consistent class styles
+            newEvent.classList.add("class-item-display");
             const eventsDiv = document.getElementById(selectedDay).querySelector(".events");
 
-            // Replace if editing, otherwise add new event
             const isEditing = Array.from(eventsDiv.children).find(e => e.classList.contains("editing"));
             if (isEditing) {
                 isEditing.innerText = `${className} - ${classTime}`;
@@ -439,60 +427,48 @@
                 eventsDiv.appendChild(newEvent);
             }
 
-            // Save to LocalStorage
             if (!classes[selectedDay]) {
                 classes[selectedDay] = [];
             }
             classes[selectedDay].push({ className, classTime });
             localStorage.setItem('classes', JSON.stringify(classes));
-
             closeAddClassModal();
         }
     }
 
-    // Delete event
     function deleteEvent(index) {
         const eventsDiv = document.getElementById(selectedDay).querySelector(".events");
         eventsDiv.children[index].remove();
-
-        // Update LocalStorage
         classes[selectedDay].splice(index, 1);
         localStorage.setItem('classes', JSON.stringify(classes));
-
         closeModal();
     }
 
-    // Reset the input fields when adding or editing a class
     function resetClassInputs() {
         document.getElementById("className").value = '';
         document.getElementById("classTime").value = '';
     }
 
-    // Set the theme for the modals
     function setModalTheme() {
         const scheduleId = selectedDay.includes('1') ? 'schedule1' : 'schedule2';
         const submitBtn = document.querySelector('.submit-btn');
         const backBtn = document.querySelector('.back-btn');
-
         submitBtn.style.backgroundColor = themeColor[scheduleId];
         submitBtn.style.borderColor = themeColor[scheduleId];
         backBtn.style.backgroundColor = themeColor[scheduleId];
         backBtn.style.border = "none";
     }
 
-    // Hover to expand a day and show its events
     function expandDay(dayId) {
         const dayElement = document.getElementById(dayId);
         dayElement.classList.add("expanded");
     }
 
-    // Collapse a day back to its original size
     function collapseDay(dayId) {
         const dayElement = document.getElementById(dayId);
         dayElement.classList.remove("expanded");
     }
 
-    // Update the background of the classes to match the theme color
     function updateClassBackgrounds(scheduleId, color) {
         const events = document.querySelectorAll(`#${scheduleId} .class-item-display`);
         events.forEach(event => {
