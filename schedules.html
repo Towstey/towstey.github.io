@@ -5,10 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>School Schedule</title>
     <style>
-        /* Updated Body to Transparent */
+        /* Body Background Transparent */
         body {
             font-family: Arial, sans-serif;
-            background-color: transparent; /* Make the background transparent */
+            background-color: transparent;
             display: flex;
             justify-content: center;
             padding: 20px;
@@ -23,10 +23,10 @@
             display: flex;
             flex-direction: column;
             width: 200px;
-            background-color: white; /* Keep a background color for the schedule boxes */
+            background-color: white;
             padding: 10px;
             border-radius: 10px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Add a shadow for visual distinction */
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
         }
 
         .header {
@@ -52,11 +52,12 @@
             position: relative;
             overflow: hidden;
             margin-bottom: 10px;
+            height: 50px;
         }
 
-        .day.expanded {
-            background-color: #f0f0f0;
-            transition: all 0.5s ease;
+        .day:hover {
+            height: 150px; /* Expand the day smoothly */
+            transition: height 0.5s ease; /* Smooth animation */
         }
 
         .class-item-display {
@@ -113,29 +114,6 @@
 
         .modal.active {
             display: block;
-        }
-
-        .modal .class-item {
-            display: flex;
-            justify-content: space-between;
-            background-color: black;
-            color: white;
-            padding: 10px;
-            border-radius: 8px;
-            margin-bottom: 10px;
-        }
-
-        .modal .class-item .buttons {
-            display: flex;
-            gap: 10px;
-        }
-
-        .modal .class-item button {
-            padding: 5px;
-            background-color: black;
-            color: white;
-            border: none;
-            cursor: pointer;
         }
 
         .overlay {
@@ -211,19 +189,19 @@
     <!-- Schedule for Week 1 -->
     <div class="schedule" id="schedule1">
         <div class="header" contenteditable="true" id="header1">NAME</div>
-        <div class="day" id="monday1" onmouseenter="expandDay('monday1')" onmouseleave="collapseDay('monday1')" onclick="openModal('monday1')">Monday
+        <div class="day" id="monday1" onclick="openModal('monday1')">Monday
             <div class="events"></div>
         </div>
-        <div class="day" id="tuesday1" onmouseenter="expandDay('tuesday1')" onmouseleave="collapseDay('tuesday1')" onclick="openModal('tuesday1')">Tuesday
+        <div class="day" id="tuesday1" onclick="openModal('tuesday1')">Tuesday
             <div class="events"></div>
         </div>
-        <div class="day" id="wednesday1" onmouseenter="expandDay('wednesday1')" onmouseleave="collapseDay('wednesday1')" onclick="openModal('wednesday1')">Wednesday
+        <div class="day" id="wednesday1" onclick="openModal('wednesday1')">Wednesday
             <div class="events"></div>
         </div>
-        <div class="day" id="thursday1" onmouseenter="expandDay('thursday1')" onmouseleave="collapseDay('thursday1')" onclick="openModal('thursday1')">Thursday
+        <div class="day" id="thursday1" onclick="openModal('thursday1')">Thursday
             <div class="events"></div>
         </div>
-        <div class="day" id="friday1" onmouseenter="expandDay('friday1')" onmouseleave="collapseDay('friday1')" onclick="openModal('friday1')">Friday
+        <div class="day" id="friday1" onclick="openModal('friday1')">Friday
             <div class="events"></div>
         </div>
         <div class="color-change-btn">
@@ -235,19 +213,19 @@
     <!-- Schedule for Week 2 -->
     <div class="schedule" id="schedule2">
         <div class="header" contenteditable="true" id="header2">NAME</div>
-        <div class="day" id="monday2" onmouseenter="expandDay('monday2')" onmouseleave="collapseDay('monday2')" onclick="openModal('monday2')">Monday
+        <div class="day" id="monday2" onclick="openModal('monday2')">Monday
             <div class="events"></div>
         </div>
-        <div class="day" id="tuesday2" onmouseenter="expandDay('tuesday2')" onmouseleave="collapseDay('tuesday2')" onclick="openModal('tuesday2')">Tuesday
+        <div class="day" id="tuesday2" onclick="openModal('tuesday2')">Tuesday
             <div class="events"></div>
         </div>
-        <div class="day" id="wednesday2" onmouseenter="expandDay('wednesday2')" onmouseleave="collapseDay('wednesday2')" onclick="openModal('wednesday2')">Wednesday
+        <div class="day" id="wednesday2" onclick="openModal('wednesday2')">Wednesday
             <div class="events"></div>
         </div>
-        <div class="day" id="thursday2" onmouseenter="expandDay('thursday2')" onmouseleave="collapseDay('thursday2')" onclick="openModal('thursday2')">Thursday
+        <div class="day" id="thursday2" onclick="openModal('thursday2')">Thursday
             <div class="events"></div>
         </div>
-        <div class="day" id="friday2" onmouseenter="expandDay('friday2')" onmouseleave="collapseDay('friday2')" onclick="openModal('friday2')">Friday
+        <div class="day" id="friday2" onclick="openModal('friday2')">Friday
             <div class="events"></div>
         </div>
         <div class="color-change-btn">
@@ -277,7 +255,7 @@
 <div class="overlay" id="overlay"></div>
 
 <script>
-    let selectedDay = null;
+    let selectedDay = null; 
     let themeColor = { schedule1: '#000000', schedule2: '#000000' };
     let classes = JSON.parse(localStorage.getItem('classes')) || {};
     let names = JSON.parse(localStorage.getItem('names')) || { header1: 'NAME', header2: 'NAME' };
@@ -457,16 +435,6 @@
         submitBtn.style.borderColor = themeColor[scheduleId];
         backBtn.style.backgroundColor = themeColor[scheduleId];
         backBtn.style.border = "none";
-    }
-
-    function expandDay(dayId) {
-        const dayElement = document.getElementById(dayId);
-        dayElement.classList.add("expanded");
-    }
-
-    function collapseDay(dayId) {
-        const dayElement = document.getElementById(dayId);
-        dayElement.classList.remove("expanded");
     }
 
     function updateClassBackgrounds(scheduleId, color) {
