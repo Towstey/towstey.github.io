@@ -21,6 +21,17 @@
             flex-direction: column;
             width: 200px;
         }
+        .header {
+            background-color: black;
+            color: white;
+            padding: 10px;
+            text-align: center;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            border: 2px solid black;
+            margin-bottom: 10px; /* Added margin between header and first day cell */
+        }
         .day {
             background-color: white;
             padding: 10px;
@@ -56,16 +67,6 @@
             margin: 5px 0; /* Add margin between class cells */
             text-align: center;
             border: 1px solid black;
-        }
-        .header {
-            background-color: black;
-            color: white;
-            padding: 10px;
-            text-align: center;
-            font-weight: bold;
-            border-radius: 8px;
-            cursor: pointer;
-            border: 2px solid black;
         }
         .color-change-btn {
             display: flex;
@@ -282,6 +283,9 @@
         header1.style.backgroundColor = newColor;
         colorPickerButton1.style.backgroundColor = newColor;
         colorPickerButton1.style.borderColor = newColor;
+
+        // Change class backgrounds to match theme
+        updateClassBackgrounds('schedule1', newColor);
     });
 
     // Apply color changes for schedule 2
@@ -299,6 +303,9 @@
         header2.style.backgroundColor = newColor;
         colorPickerButton2.style.backgroundColor = newColor;
         colorPickerButton2.style.borderColor = newColor;
+
+        // Change class backgrounds to match theme
+        updateClassBackgrounds('schedule2', newColor);
     });
 
     // Open modal and load classes for the selected day
@@ -380,9 +387,9 @@
         if (className && classTime) {
             const newEvent = document.createElement("div");
             newEvent.innerText = `${className} - ${classTime}`;
-            newEvent.classList.add("event-item");
+            newEvent.classList.add("class-item-display"); // Ensure consistent class styles
             const eventsDiv = document.getElementById(selectedDay).querySelector(".events");
-            
+
             // Replace if editing, otherwise add new event
             const isEditing = Array.from(eventsDiv.children).find(e => e.classList.contains("editing"));
             if (isEditing) {
@@ -433,6 +440,13 @@
         dayElement.classList.remove("expanded");
     }
 
+    // Update the background of the classes to match the theme color
+    function updateClassBackgrounds(scheduleId, color) {
+        const events = document.querySelectorAll(`#${scheduleId} .class-item-display`);
+        events.forEach(event => {
+            event.style.backgroundColor = color;
+        });
+    }
 </script>
 
 </body>
