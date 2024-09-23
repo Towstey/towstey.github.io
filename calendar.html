@@ -1,292 +1,224 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Interactive Calendar</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: transparent;
-            color: black;
-        }
-        .calendar {
-            width: 100%; /* Make calendar wider */
-            max-width: 900px; /* Increase max width */
-            margin: 0 auto;
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            gap: 10px;
-        }
-        .calendar-header {
-            text-align: center;
-            margin-bottom: 20px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-        .month-indicator {
-            background-color: black;
-            color: white;
-            padding: 10px 20px;
-            border: 2px solid black;
-            border-radius: 8px;
-            margin: 0 10px;
-        }
-        .day, .empty-day {
-            padding: 10px;
-            border: 2px solid black;
-            border-radius: 8px;
-            text-align: center;
-            cursor: pointer;
-            background-color: white;
-            color: black;
-            min-height: 40px;
-            line-height: 40px;
-            display: flex;
-            flex-direction: column;
-            justify-content: flex-start;
-        }
-        .day:hover {
-            background-color: #f0f0f0;
-        }
-        .day-indicator {
-            padding: 10px;
-            border: 2px solid black;
-            background-color: black; /* Background color remains black */
-            color: white;
-            text-align: center;
-            margin-bottom: 8px;
-            border-radius: 8px; /* Re-added border radius */
-        }
-        .event {
-            background-color: white;
-            color: black;
-            height: 5px;
-            width: 100%;
-            transition: height 0.3s ease;
-            overflow: hidden;
-            border-radius: 4px;
-            margin-top: 5px;
-            font-size: 12px;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-            text-align: center;
-            border: 1px solid black;
-        }
-        .event:hover {
-            height: 40px; /* Expands vertically only */
-            overflow-y: auto;
-            white-space: normal;
-        }
-        .modal, .edit-modal {
-            display: none;
-            position: fixed;
-            left: 50%;
-            top: 50%;
-            transform: translate(-50%, -50%);
-            background-color: white;
-            padding: 20px;
-            border: 1px solid #ccc;
-            z-index: 1000;
-            width: 300px;
-        }
-        .modal.active, .edit-modal.active {
-            display: block;
-        }
-        .overlay {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            z-index: 999;
-        }
-        .overlay.active {
-            display: block;
-        }
-        .modal input, .modal textarea, .edit-modal input, .edit-modal textarea {
-            width: 100%;
-            margin-bottom: 10px;
-        }
-        .calendar-day {
-            display: flex;
-            flex-direction: column;
-        }
-        .arrow-button {
-            background-color: black;
-            color: white;
-            border: 2px solid black;
-            padding: 5px 10px;
-            border-radius: 8px;
-            cursor: pointer;
-        }
-        .arrow-button:hover {
-            background-color: white;
-            color: black;
-        }
-        .event-list {
-            margin-bottom: 15px;
-        }
-        .event-list button {
-            background-color: black;
-            color: white;
-            display: block;
-            margin: 5px 0;
-            padding: 5px;
-            width: 100%;
-            text-align: center;
-            cursor: pointer;
-            border: 2px solid black;
-        }
-        .modal-buttons {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 15px;
-        }
-        .modal-buttons button {
-            background-color: black;
-            color: white;
-            padding: 5px 10px;
-            cursor: pointer;
-            border: 2px solid black;
-            border-radius: 4px;
-        }
-        .modal-buttons button:hover {
-            background-color: white;
-            color: black;
-        }
-        .upcoming-events {
-            display: flex;
-            justify-content: center;
-            margin-top: 20px;
-        }
-        .upcoming-event {
-            padding: 10px;
-            border: 2px solid black;
-            background-color: black;
-            color: white;
-            text-align: center;
-            margin: 0 10px;
-            border-radius: 8px;
-            flex: 1;
-        }
-        /* Style for color change button */
-        .color-change-btn {
-            margin-top: 20px;
-            display: flex;
-            justify-content: center;
-        }
-        .color-picker-button {
-            background-color: black; /* Default color (black) */
-            color: white;
-            border: 2px solid black;
-            padding: 10px 20px;
-            border-radius: 8px;
-            cursor: pointer;
-        }
-        /* Hidden color picker */
-        #colorPicker {
-            display: none;
-        }
-    </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Calendar</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: transparent;
+            color: black;
+        }
+        .calendar {
+            width: 100%;
+            max-width: 900px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 10px;
+        }
+        .calendar-header {
+            text-align: center;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .month-indicator {
+            background-color: black;
+            color: white;
+            padding: 10px 20px;
+            border: 2px solid black;
+            border-radius: 8px;
+            margin: 0 10px;
+        }
+        .day, .empty-day {
+            padding: 10px;
+            border: 2px solid black;
+            border-radius: 8px;
+            text-align: center;
+            cursor: pointer;
+            background-color: white;
+            color: black;
+            min-height: 40px;
+            line-height: 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+        }
+        .day:hover {
+            background-color: #f0f0f0;
+        }
+        .day-indicator {
+            padding: 10px;
+            border: 2px solid black;
+            background-color: black;
+            color: white;
+            text-align: center;
+            margin-bottom: 8px;
+            border-radius: 8px;
+        }
+        .event {
+            background-color: white;
+            color: black;
+            height: 5px;
+            width: 100%;
+            transition: height 0.3s ease;
+            overflow: hidden;
+            border-radius: 4px;
+            margin-top: 5px;
+            font-size: 12px;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            text-align: center;
+            border: 1px solid black;
+        }
+        .event:hover {
+            height: 40px;
+            overflow-y: auto;
+            white-space: normal;
+        }
+        .modal, .edit-modal {
+            display: none;
+            position: fixed;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            background-color: white;
+            padding: 20px;
+            border: 1px solid #ccc;
+            z-index: 1000;
+            width: 300px;
+        }
+        .modal.active, .edit-modal.active {
+            display: block;
+        }
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+        }
+        .overlay.active {
+            display: block;
+        }
+        .modal input, .modal textarea, .edit-modal input, .edit-modal textarea {
+            width: 100%;
+            margin-bottom: 10px;
+        }
+        .arrow-button {
+            background-color: black;
+            color: white;
+            border: 2px solid black;
+            padding: 5px 10px;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+        .arrow-button:hover {
+            background-color: white;
+            color: black;
+        }
+        .upcoming-events {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        .upcoming-event {
+            padding: 10px;
+            border: 2px solid black;
+            background-color: black;
+            color: white;
+            text-align: center;
+            margin: 0 10px;
+            border-radius: 8px;
+            flex: 1;
+        }
+    </style>
 </head>
 <body>
 
 <div class="calendar-header">
-    <button class="arrow-button" onclick="prevMonth()">&#8592;</button>
-    <span class="month-indicator" id="current-month"></span>
-    <button class="arrow-button" onclick="nextMonth()">&#8594;</button>
+    <button class="arrow-button" onclick="prevMonth()">&#8592;</button>
+    <span class="month-indicator" id="current-month"></span>
+    <button class="arrow-button" onclick="nextMonth()">&#8594;</button>
 </div>
 
-<!-- Day Indicators (Sunday to Saturday) -->
 <div class="calendar" id="day-indicators">
-    <div class="day-indicator">Sun</div>
-    <div class="day-indicator">Mon</div>
-    <div class="day-indicator">Tue</div>
-    <div class="day-indicator">Wed</div>
-    <div class="day-indicator">Thu</div>
-    <div class="day-indicator">Fri</div>
-    <div class="day-indicator">Sat</div>
+    <div class="day-indicator">Sun</div>
+    <div class="day-indicator">Mon</div>
+    <div class="day-indicator">Tue</div>
+    <div class="day-indicator">Wed</div>
+    <div class="day-indicator">Thu</div>
+    <div class="day-indicator">Fri</div>
+    <div class="day-indicator">Sat</div>
 </div>
 
 <div class="calendar" id="calendar"></div>
 
 <div class="modal" id="eventModal">
-    <div class="event-list" id="eventList"></div>
-    <div class="modal-buttons">
-        <button id="addEventBtn" onclick="openAddEventModal()">Add</button>
-        <button id="editEventBtn" onclick="openEditEventModal()" style="display:none;">Edit</button>
-        <button id="deleteEventBtn" onclick="deleteSelectedEvent()" style="display:none;">Delete</button>
-        <button onclick="closeModal()">Cancel</button>
-    </div>
+    <div class="event-list" id="eventList"></div>
+    <div class="modal-buttons">
+        <button id="addEventBtn" onclick="openAddEventModal()">Add</button>
+        <button id="editEventBtn" onclick="openEditEventModal()" style="display:none;">Edit</button>
+        <button id="deleteEventBtn" onclick="deleteSelectedEvent()" style="display:none;">Delete</button>
+        <button onclick="closeModal()">Cancel</button>
+    </div>
 </div>
 
 <div class="edit-modal" id="addEventModal">
-    <input type="text" id="eventTitle" placeholder="Event Title">
-    <textarea id="eventDescription" placeholder="Event Description"></textarea>
-    <button onclick="saveEvent()">Save</button>
-    <button onclick="closeEditModal()">Cancel</button>
+    <input type="text" id="eventTitle" placeholder="Event Title">
+    <textarea id="eventDescription" placeholder="Event Description"></textarea>
+    <button onclick="saveEvent()">Save</button>
+    <button onclick="closeEditModal()">Cancel</button>
 </div>
 
-<!-- Upcoming Events Section -->
 <div class="upcoming-events" id="upcomingEvents">
-    <div class="upcoming-event" id="upcoming1"></div>
-    <div class="upcoming-event" id="upcoming2"></div>
-    <div class="upcoming-event" id="upcoming3"></div>
-</div>
-
-<div class="color-change-btn">
-    <button class="color-picker-button" id="colorPickerButton">Change Color</button>
-    <input type="color" id="colorPicker" value="#000000">
+    <div class="upcoming-event" id="upcoming1"></div>
+    <div class="upcoming-event" id="upcoming2"></div>
+    <div class="upcoming-event" id="upcoming3"></div>
 </div>
 
 <div class="overlay" id="overlay"></div>
 
+<script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js"></script>
+
 <script>
-    const calendar = document.getElementById("calendar");
-    const currentMonthEl = document.getElementById("current-month");
-    const eventModal = document.getElementById("eventModal");
-    const addEventModal = document.getElementById("addEventModal");
-    const overlay = document.getElementById("overlay");
-    const eventList = document.getElementById("eventList");
-    const upcomingEvents = [document.getElementById("upcoming1"), document.getElementById("upcoming2"), document.getElementById("upcoming3")];
-    const colorPickerButton = document.getElementById("colorPickerButton");
-    const colorPicker = document.getElementById("colorPicker");
+    // Firebase configuration
+    const firebaseConfig = {
+        apiKey: "AIzaSyBnY69MVyX2uR9Ek-2wIJhxQANxiYtrrDQ",
+        authDomain: "notion-calendar-7daf0.firebaseapp.com",
+        projectId: "notion-calendar-7daf0",
+        storageBucket: "notion-calendar-7daf0.appspot.com",
+        messagingSenderId: "678607533398",
+        appId: "1:678607533398:web:5c89fc2d3f53f409af12f7",
+        measurementId: "G-YV1SVEH6PM"
+    };
 
-    let currentMonth = new Date().getMonth();
-    let currentYear = new Date().getFullYear();
-    let events = JSON.parse(localStorage.getItem('events')) || {};
-    let selectedDay = null;
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+
+    // Initialize Firestore
+    const db = firebase.firestore();
+
+    const calendar = document.getElementById("calendar");
+    const currentMonthEl = document.getElementById("current-month");
+    const eventModal = document.getElementById("eventModal");
+    const addEventModal = document.getElementById("addEventModal");
+    const overlay = document.getElementById("overlay");
+    const eventList = document.getElementById("eventList");
+    const upcomingEvents = [document.getElementById("upcoming1"), document.getElementById("upcoming2"), document.getElementById("upcoming3")];
+    let currentMonth = new Date().getMonth();
+    let currentYear = new Date().getFullYear();
+    let selectedDay = null
     let selectedEventIndex = null;
-    let currentColor = localStorage.getItem('themeColor') || '#000000'; // Default color black
 
-    // Apply the current color theme to all black elements
-    function applyThemeColor(color) {
-        const elementsToChange = document.querySelectorAll('.month-indicator, .day-indicator, .arrow-button, .event-list button, .modal-buttons button, .upcoming-event');
-        
-        elementsToChange.forEach(el => {
-            el.style.backgroundColor = color;
-            el.style.borderColor = color;
-        });
-        colorPickerButton.style.backgroundColor = color; // Also change the button color
-        localStorage.setItem('themeColor', color); // Save to localStorage
-    }
-
-    // Show the color picker when the button is clicked
-    colorPickerButton.addEventListener('click', () => {
-        colorPicker.click();
-    });
-
-    // Listen for changes in the color picker
-    colorPicker.addEventListener('input', (e) => {
-        const newColor = e.target.value;
-        currentColor = newColor;
-        applyThemeColor(newColor);
-    });
-
+    // Render the calendar
     function renderCalendar() {
         const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
         const firstDayOfMonth = new Date(currentYear, currentMonth, 1).getDay();
@@ -294,138 +226,160 @@
         calendar.innerHTML = '';
         currentMonthEl.innerText = new Date(currentYear, currentMonth).toLocaleString('default', { month: 'long', year: 'numeric' });
 
+        // Fill in empty days before the first day of the month
         for (let i = 0; i < firstDayOfMonth; i++) {
             const emptyDay = document.createElement('div');
             emptyDay.classList.add('empty-day');
             calendar.appendChild(emptyDay);
         }
 
+        // Add days to the calendar
         for (let i = 1; i <= daysInMonth; i++) {
             const dayEl = document.createElement('div');
             dayEl.classList.add('day');
             dayEl.innerText = i;
             dayEl.addEventListener('click', () => openModal(i));
-            
+
             const dayKey = `${currentYear}-${currentMonth}-${i}`;
-            if (events[dayKey]) {
-                events[dayKey].forEach(event => {
+
+            // Retrieve events for the day from Firestore
+            db.collection('events').where('date', '==', dayKey).get().then((querySnapshot) => {
+                querySnapshot.forEach((doc) => {
+                    const event = doc.data();
                     const eventEl = document.createElement('div');
                     eventEl.classList.add('event');
                     eventEl.innerText = event.title;
                     dayEl.appendChild(eventEl);
                 });
-            }
+            });
 
             calendar.appendChild(dayEl);
         }
 
+        // Render the upcoming events
         renderUpcomingEvents();
     }
 
+    // Render the upcoming events
     function renderUpcomingEvents() {
         const allEvents = [];
 
-        // Gather all events from all days
-        for (const day in events) {
-            events[day].forEach(event => {
-                const eventDate = new Date(day);
-                allEvents.push({ title: event.title, date: eventDate });
+        // Fetch all events from Firestore
+        db.collection('events').get().then((querySnapshot) => {
+            querySnapshot.forEach((doc) => {
+                const data = doc.data();
+                const eventDate = new Date(`${data.date}`);
+                allEvents.push({ title: data.title, date: eventDate });
             });
-        }
 
-        // Sort events by date
-        allEvents.sort((a, b) => a.date - b.date);
+            // Sort events by date
+            allEvents.sort((a, b) => a.date - b.date);
 
-        // Display the 3 most upcoming events
-        for (let i = 0; i < upcomingEvents.length; i++) {
-            if (allEvents[i]) {
-                upcomingEvents[i].innerText = `${allEvents[i].title} - ${allEvents[i].date.toDateString()}`;
-            } else {
-                upcomingEvents[i].innerText = "No upcoming event";
+            // Display the 3 most upcoming events
+            for (let i = 0; i < upcomingEvents.length; i++) {
+                if (allEvents[i]) {
+                    upcomingEvents[i].innerText = `${allEvents[i].title} - ${allEvents[i].date.toDateString()}`;
+                } else {
+                    upcomingEvents[i].innerText = "No upcoming event";
+                }
             }
-        }
+        });
     }
 
+    // Open the modal to add or view events for a specific day
     function openModal(day) {
         selectedDay = `${currentYear}-${currentMonth}-${day}`;
         eventList.innerHTML = '';
 
-        if (events[selectedDay] && events[selectedDay].length > 0) {
-            events[selectedDay].forEach((event, index) => {
+        // Fetch events for the selected day from Firestore
+        db.collection('events').where('date', '==', selectedDay).get().then((querySnapshot) => {
+            querySnapshot.forEach((doc) => {
+                const event = doc.data();
                 const eventBtn = document.createElement('button');
                 eventBtn.innerText = event.title;
-                eventBtn.onclick = () => selectEvent(index);
+                eventBtn.onclick = () => selectEvent(doc.id, event);
                 eventList.appendChild(eventBtn);
             });
-            document.getElementById("editEventBtn").style.display = 'block';
-            document.getElementById("deleteEventBtn").style.display = 'block';
-        } else {
-            document.getElementById("editEventBtn").style.display = 'none';
-            document.getElementById("deleteEventBtn").style.display = 'none';
-        }
+
+            document.getElementById("editEventBtn").style.display = querySnapshot.size ? 'block' : 'none';
+            document.getElementById("deleteEventBtn").style.display = querySnapshot.size ? 'block' : 'none';
+        });
 
         eventModal.classList.add('active');
         overlay.classList.add('active');
     }
 
-    function selectEvent(index) {
-        selectedEventIndex = index;
+    // Select an event to edit or delete
+    function selectEvent(eventId, event) {
+        selectedEventIndex = eventId;
+        document.getElementById('eventTitle').value = event.title;
+        document.getElementById('eventDescription').value = event.description;
     }
 
+    // Open the modal to add a new event
     function openAddEventModal() {
         selectedEventIndex = null;
         addEventModal.classList.add('active');
     }
 
+    // Open the modal to edit the selected event
     function openEditEventModal() {
         if (selectedEventIndex !== null) {
-            const selectedEvent = events[selectedDay][selectedEventIndex];
-            document.getElementById('eventTitle').value = selectedEvent.title;
-            document.getElementById('eventDescription').value = selectedEvent.description;
             addEventModal.classList.add('active');
         }
     }
 
+    // Save the new or edited event to Firestore
     function saveEvent() {
         const eventTitle = document.getElementById('eventTitle').value;
         const eventDescription = document.getElementById('eventDescription').value;
+        const eventData = { title: eventTitle, description: eventDescription, date: selectedDay };
 
-        if (!events[selectedDay]) {
-            events[selectedDay] = [];
-        }
-
-        const newEvent = { title: eventTitle, description: eventDescription };
-
-        if (selectedEventIndex !== null) {
-            events[selectedDay][selectedEventIndex] = newEvent;
+        // Save new event or update the existing one
+        if (selectedEventIndex === null) {
+            // Add new event
+            db.collection('events').add(eventData).then(() => {
+                closeEditModal();
+                renderCalendar();
+            }).catch((error) => {
+                console.error("Error adding event: ", error);
+            });
         } else {
-            events[selectedDay].push(newEvent);
+            // Update existing event
+            db.collection('events').doc(selectedEventIndex).update(eventData).then(() => {
+                closeEditModal();
+                renderCalendar();
+            }).catch((error) => {
+                console.error("Error updating event: ", error);
+            });
         }
-
-        localStorage.setItem('events', JSON.stringify(events));
-        closeEditModal();
-        renderCalendar();
     }
 
+    // Delete the selected event
     function deleteSelectedEvent() {
         if (selectedEventIndex !== null) {
-            events[selectedDay].splice(selectedEventIndex, 1);
-            localStorage.setItem('events', JSON.stringify(events));
-            closeModal();
-            renderCalendar();
+            db.collection('events').doc(selectedEventIndex).delete().then(() => {
+                closeModal();
+                renderCalendar();
+            }).catch((error) => {
+                console.error("Error deleting event: ", error);
+            });
         }
     }
 
+    // Close the event modal
     function closeModal() {
         eventModal.classList.remove('active');
         overlay.classList.remove('active');
     }
 
+    // Close the add/edit event modal
     function closeEditModal() {
         addEventModal.classList.remove('active');
         overlay.classList.remove('active');
     }
 
+    // Navigate to the previous month
     function prevMonth() {
         currentMonth--;
         if (currentMonth < 0) {
@@ -435,6 +389,7 @@
         renderCalendar();
     }
 
+    // Navigate to the next month
     function nextMonth() {
         currentMonth++;
         if (currentMonth > 11) {
@@ -444,9 +399,7 @@
         renderCalendar();
     }
 
-    // Apply the saved theme color when the page loads
-    applyThemeColor(currentColor);
-
+    // Render the calendar initially
     renderCalendar();
 </script>
 
