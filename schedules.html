@@ -46,7 +46,16 @@
         }
         .day.expanded .events {
             display: flex;
-            max-height: 500px;
+            max-height: 500px; /* Smooth expand */
+        }
+        .class-item-display {
+            background-color: white;
+            color: black;
+            padding: 8px;
+            border-radius: 8px;
+            margin-top: 5px;
+            text-align: center;
+            border: 1px solid black;
         }
         .header {
             background-color: black;
@@ -70,7 +79,7 @@
             padding: 10px 20px;
             border-radius: 8px;
             cursor: pointer;
-            width: 100%; /* Full width button */
+            width: 100%;
         }
         .add-event-btn {
             margin-top: 5px;
@@ -186,11 +195,24 @@
     <!-- Schedule for Week 1 -->
     <div class="schedule" id="schedule1">
         <div class="header" contenteditable="true" id="header1">NAME</div>
-        <div class="day" id="monday1" onmouseenter="expandDay('monday1')" onmouseleave="collapseDay('monday1')" onclick="openModal('monday1')">Monday <div class="events"></div></div>
-        <div class="day" id="tuesday1" onmouseenter="expandDay('tuesday1')" onmouseleave="collapseDay('tuesday1')" onclick="openModal('tuesday1')">Tuesday <div class="events"></div></div>
-        <div class="day" id="wednesday1" onmouseenter="expandDay('wednesday1')" onmouseleave="collapseDay('wednesday1')" onclick="openModal('wednesday1')">Wednesday <div class="events"></div></div>
-        <div class="day" id="thursday1" onmouseenter="expandDay('thursday1')" onmouseleave="collapseDay('thursday1')" onclick="openModal('thursday1')">Thursday <div class="events"></div></div>
-        <div class="day" id="friday1" onmouseenter="expandDay('friday1')" onmouseleave="collapseDay('friday1')" onclick="openModal('friday1')">Friday <div class="events"></div></div>
+        <div class="day" id="monday1" onmouseenter="expandDay('monday1')" onmouseleave="collapseDay('monday1')" onclick="openModal('monday1')">Monday
+            <div class="events">
+                <div class="class-item-display">Class 1 - 9:00</div>
+                <div class="class-item-display">Class 2 - 11:00</div>
+            </div>
+        </div>
+        <div class="day" id="tuesday1" onmouseenter="expandDay('tuesday1')" onmouseleave="collapseDay('tuesday1')" onclick="openModal('tuesday1')">Tuesday
+            <div class="events"></div>
+        </div>
+        <div class="day" id="wednesday1" onmouseenter="expandDay('wednesday1')" onmouseleave="collapseDay('wednesday1')" onclick="openModal('wednesday1')">Wednesday
+            <div class="events"></div>
+        </div>
+        <div class="day" id="thursday1" onmouseenter="expandDay('thursday1')" onmouseleave="collapseDay('thursday1')" onclick="openModal('thursday1')">Thursday
+            <div class="events"></div>
+        </div>
+        <div class="day" id="friday1" onmouseenter="expandDay('friday1')" onmouseleave="collapseDay('friday1')" onclick="openModal('friday1')">Friday
+            <div class="events"></div>
+        </div>
         <div class="color-change-btn">
             <button class="color-picker-button" id="colorPickerButton1">Change Color</button>
             <input type="color" id="colorPicker1" style="display: none;">
@@ -200,11 +222,21 @@
     <!-- Schedule for Week 2 -->
     <div class="schedule" id="schedule2">
         <div class="header" contenteditable="true" id="header2">NAME</div>
-        <div class="day" id="monday2" onmouseenter="expandDay('monday2')" onmouseleave="collapseDay('monday2')" onclick="openModal('monday2')">Monday <div class="events"></div></div>
-        <div class="day" id="tuesday2" onmouseenter="expandDay('tuesday2')" onmouseleave="collapseDay('tuesday2')" onclick="openModal('tuesday2')">Tuesday <div class="events"></div></div>
-        <div class="day" id="wednesday2" onmouseenter="expandDay('wednesday2')" onmouseleave="collapseDay('wednesday2')" onclick="openModal('wednesday2')">Wednesday <div class="events"></div></div>
-        <div class="day" id="thursday2" onmouseenter="expandDay('thursday2')" onmouseleave="collapseDay('thursday2')" onclick="openModal('thursday2')">Thursday <div class="events"></div></div>
-        <div class="day" id="friday2" onmouseenter="expandDay('friday2')" onmouseleave="collapseDay('friday2')" onclick="openModal('friday2')">Friday <div class="events"></div></div>
+        <div class="day" id="monday2" onmouseenter="expandDay('monday2')" onmouseleave="collapseDay('monday2')" onclick="openModal('monday2')">Monday
+            <div class="events"></div>
+        </div>
+        <div class="day" id="tuesday2" onmouseenter="expandDay('tuesday2')" onmouseleave="collapseDay('tuesday2')" onclick="openModal('tuesday2')">Tuesday
+            <div class="events"></div>
+        </div>
+        <div class="day" id="wednesday2" onmouseenter="expandDay('wednesday2')" onmouseleave="collapseDay('wednesday2')" onclick="openModal('wednesday2')">Wednesday
+            <div class="events"></div>
+        </div>
+        <div class="day" id="thursday2" onmouseenter="expandDay('thursday2')" onmouseleave="collapseDay('thursday2')" onclick="openModal('thursday2')">Thursday
+            <div class="events"></div>
+        </div>
+        <div class="day" id="friday2" onmouseenter="expandDay('friday2')" onmouseleave="collapseDay('friday2')" onclick="openModal('friday2')">Friday
+            <div class="events"></div>
+        </div>
         <div class="color-change-btn">
             <button class="color-picker-button" id="colorPickerButton2">Change Color</button>
             <input type="color" id="colorPicker2" style="display: none;">
@@ -233,7 +265,7 @@
 
 <script>
     let selectedDay = null; // Track the currently selected day
-    let themeColor = '#000000'; // Track the current theme color
+    let themeColor = { schedule1: '#000000', schedule2: '#000000' }; // Track the current theme color for both schedules
 
     // Apply color changes for schedule 1
     const colorPickerButton1 = document.getElementById("colorPickerButton1");
@@ -246,10 +278,10 @@
 
     colorPicker1.addEventListener("input", (e) => {
         const newColor = e.target.value;
-        themeColor = newColor; // Save the current theme color
+        themeColor.schedule1 = newColor; // Save the theme color for schedule 1
         header1.style.backgroundColor = newColor;
         colorPickerButton1.style.backgroundColor = newColor;
-        colorPickerButton1.style.borderColor = newColor; // Keep border consistent
+        colorPickerButton1.style.borderColor = newColor;
     });
 
     // Apply color changes for schedule 2
@@ -263,10 +295,10 @@
 
     colorPicker2.addEventListener("input", (e) => {
         const newColor = e.target.value;
-        themeColor = newColor; // Save the current theme color
+        themeColor.schedule2 = newColor; // Save the theme color for schedule 2
         header2.style.backgroundColor = newColor;
         colorPickerButton2.style.backgroundColor = newColor;
-        colorPickerButton2.style.borderColor = newColor; // Keep border consistent
+        colorPickerButton2.style.borderColor = newColor;
     });
 
     // Open modal and load classes for the selected day
@@ -277,10 +309,13 @@
 
         const eventsDiv = document.getElementById(dayId).querySelector(".events");
 
-        // Set modal buttons to match the theme color
-        document.querySelector('.add-event-btn').style.backgroundColor = themeColor;
-        document.querySelector('.back-btn').style.backgroundColor = themeColor;
-        document.querySelector('.back-btn').style.border = "none"; // Remove border from back button
+        // Determine the schedule based on the day clicked
+        const scheduleId = dayId.includes('1') ? 'schedule1' : 'schedule2';
+
+        // Set modal buttons to match the theme color of the clicked schedule
+        document.querySelector('.add-event-btn').style.backgroundColor = themeColor[scheduleId];
+        document.querySelector('.back-btn').style.backgroundColor = themeColor[scheduleId];
+        document.querySelector('.back-btn').style.border = "none";
 
         if (eventsDiv.children.length === 0) {
             classList.innerHTML = '<p>No classes. Click Add to create one.</p>';
@@ -346,7 +381,16 @@
             const newEvent = document.createElement("div");
             newEvent.innerText = `${className} - ${classTime}`;
             newEvent.classList.add("event-item");
-            document.getElementById(selectedDay).querySelector(".events").appendChild(newEvent);
+            const eventsDiv = document.getElementById(selectedDay).querySelector(".events");
+            
+            // Replace if editing, otherwise add new event
+            const isEditing = Array.from(eventsDiv.children).find(e => e.classList.contains("editing"));
+            if (isEditing) {
+                isEditing.innerText = `${className} - ${classTime}`;
+                isEditing.classList.remove("editing");
+            } else {
+                eventsDiv.appendChild(newEvent);
+            }
 
             closeAddClassModal();
         }
@@ -367,13 +411,14 @@
 
     // Set the theme for the modals
     function setModalTheme() {
+        const scheduleId = selectedDay.includes('1') ? 'schedule1' : 'schedule2';
         const submitBtn = document.querySelector('.submit-btn');
         const backBtn = document.querySelector('.back-btn');
 
-        submitBtn.style.backgroundColor = themeColor;
-        submitBtn.style.borderColor = themeColor;
-        backBtn.style.backgroundColor = themeColor;
-        backBtn.style.border = "none"; // Remove border from back button
+        submitBtn.style.backgroundColor = themeColor[scheduleId];
+        submitBtn.style.borderColor = themeColor[scheduleId];
+        backBtn.style.backgroundColor = themeColor[scheduleId];
+        backBtn.style.border = "none";
     }
 
     // Hover to expand a day and show its events
