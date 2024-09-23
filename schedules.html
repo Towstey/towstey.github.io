@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>School Schedule</title>
     <style>
+        /* Styles (Same as before) */
         body {
             font-family: Arial, sans-serif;
             background-color: #f4f4f4;
@@ -30,7 +31,7 @@
             border-radius: 8px;
             cursor: pointer;
             border: 2px solid black;
-            margin-bottom: 10px; /* Added margin between header and first day cell */
+            margin-bottom: 10px;
         }
         .day {
             background-color: white;
@@ -42,18 +43,18 @@
             transition: all 0.3s ease;
             position: relative;
             overflow: hidden;
-            margin-bottom: 10px; /* Add spacing between day cells */
+            margin-bottom: 10px;
         }
         .day.expanded {
             background-color: #f0f0f0;
-            transition: all 0.5s ease; /* Smooth animation on hover */
+            transition: all 0.5s ease;
         }
         .day .events {
             display: none;
             flex-direction: column;
             overflow: hidden;
             max-height: 0;
-            transition: max-height 0.5s ease-in-out; /* Smooth expand/collapse */
+            transition: max-height 0.5s ease-in-out;
         }
         .day.expanded .events {
             display: flex;
@@ -64,7 +65,7 @@
             color: black;
             padding: 8px;
             border-radius: 8px;
-            margin: 5px 0; /* Add margin between class cells */
+            margin: 5px 0;
             text-align: center;
             border: 1px solid black;
         }
@@ -92,7 +93,6 @@
             cursor: pointer;
             width: 100%;
         }
-        /* Modal Styles */
         .modal {
             display: none;
             position: fixed;
@@ -142,7 +142,6 @@
         .overlay.active {
             display: block;
         }
-        /* Modal for Adding or Editing Class */
         .add-class-modal {
             display: none;
             position: fixed;
@@ -197,10 +196,7 @@
     <div class="schedule" id="schedule1">
         <div class="header" contenteditable="true" id="header1">NAME</div>
         <div class="day" id="monday1" onmouseenter="expandDay('monday1')" onmouseleave="collapseDay('monday1')" onclick="openModal('monday1')">Monday
-            <div class="events">
-                <div class="class-item-display">Class 1 - 9:00</div>
-                <div class="class-item-display">Class 2 - 11:00</div>
-            </div>
+            <div class="events"></div>
         </div>
         <div class="day" id="tuesday1" onmouseenter="expandDay('tuesday1')" onmouseleave="collapseDay('tuesday1')" onclick="openModal('tuesday1')">Tuesday
             <div class="events"></div>
@@ -267,6 +263,48 @@
 <script>
     let selectedDay = null; // Track the currently selected day
     let themeColor = { schedule1: '#000000', schedule2: '#000000' }; // Track the current theme color for both schedules
+    let classes = JSON.parse(localStorage.getItem('classes')) || {}; // Load classes from LocalStorage
+    let names = JSON.parse(localStorage.getItem('names')) || { header1: 'NAME', header2: 'NAME' };
+    let colors = JSON.parse(localStorage.getItem('colors')) || { schedule1: '#000000', schedule2: '#000000' };
+
+    // Apply saved color and name data on page load
+    window.onload = function() {
+        // Set saved names
+        document.getElementById('header1').innerText = names.header1;
+        document.getElementById('header2').innerText = names.header2;
+
+        // Set saved colors
+        document.getElementById('header1').style.backgroundColor = colors.schedule1;
+        document.getElementById('header2').style.backgroundColor = colors.schedule2;
+        document.getElementById('colorPickerButton1').style.backgroundColor = colors.schedule1;
+        document.getElementById('colorPickerButton2').style.backgroundColor = colors.schedule2;
+
+        // Set theme colors in variables
+        themeColor.schedule1 = colors.schedule1;
+        themeColor.schedule2 = colors.schedule2;
+
+        // Load saved classes
+        for (const [dayId, classList] of Object.entries(classes)) {
+            const eventsDiv = document.getElementById(dayId).querySelector(".events");
+            classList.forEach(classItem => {
+                const newEvent = document.createElement("div");
+                newEvent.innerText = `${classItem.className} - ${classItem.classTime}`;
+                newEvent.classList.add("class-item-display");
+                eventsDiv.appendChild(newEvent);
+            });
+        }
+    };
+
+    // Save names to LocalStorage
+    document.getElementById('header1').addEventListener('input', () => {
+        names.header1 = document.getElementById('header1').innerText;
+        localStorage.setItem('names', JSON.stringify(names));
+    });
+
+    document.getElementById('header2').addEventListener('input', () => {
+        names.header2 = document.getElementById('header2').innerText;
+        localStorage.setItem('names', JSON.stringify(names));
+    });
 
     // Apply color changes for schedule 1
     const colorPickerButton1 = document.getElementById("colorPickerButton1");
@@ -282,7 +320,8 @@
         themeColor.schedule1 = newColor; // Save the theme color for schedule 1
         header1.style.backgroundColor = newColor;
         colorPickerButton1.style.backgroundColor = newColor;
-        colorPickerButton1.style.borderColor = newColor;
+        colors.schedule1 = newColor;
+        localStorage.setItem('colors', JSON.stringify(colors));
 
         // Change class backgrounds to match theme
         updateClassBackgrounds('schedule1', newColor);
@@ -302,7 +341,8 @@
         themeColor.schedule2 = newColor; // Save the theme color for schedule 2
         header2.style.backgroundColor = newColor;
         colorPickerButton2.style.backgroundColor = newColor;
-        colorPickerButton2.style.borderColor = newColor;
+        colors.schedule2 = newColor;
+        localStorage.setItem('colors', JSON.stringify(colors));
 
         // Change class backgrounds to match theme
         updateClassBackgrounds('schedule2', newColor);
@@ -399,6 +439,13 @@
                 eventsDiv.appendChild(newEvent);
             }
 
+            // Save to LocalStorage
+            if (!classes[selectedDay]) {
+                classes[selectedDay] = [];
+            }
+            classes[selectedDay].push({ className, classTime });
+            localStorage.setItem('classes', JSON.stringify(classes));
+
             closeAddClassModal();
         }
     }
@@ -407,6 +454,11 @@
     function deleteEvent(index) {
         const eventsDiv = document.getElementById(selectedDay).querySelector(".events");
         eventsDiv.children[index].remove();
+
+        // Update LocalStorage
+        classes[selectedDay].splice(index, 1);
+        localStorage.setItem('classes', JSON.stringify(classes));
+
         closeModal();
     }
 
