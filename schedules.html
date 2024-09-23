@@ -46,7 +46,7 @@
         }
         .day.expanded .events {
             display: flex;
-            max-height: 500px; /* Smooth expand */
+            max-height: 500px;
         }
         .header {
             background-color: black;
@@ -70,14 +70,17 @@
             padding: 10px 20px;
             border-radius: 8px;
             cursor: pointer;
+            width: 100%; /* Full width button */
         }
         .add-event-btn {
             margin-top: 5px;
             background-color: black;
             color: white;
             padding: 5px;
+            border-radius: 8px;
             border: none;
             cursor: pointer;
+            width: 100%;
         }
         /* Modal Styles */
         .modal {
@@ -115,17 +118,6 @@
             color: white;
             border: none;
             cursor: pointer;
-        }
-        .modal .add-event-btn {
-            margin-top: 20px;
-            background-color: black;
-            color: white;
-            padding: 10px;
-            border: none;
-            cursor: pointer;
-            width: 100%;
-            text-align: center;
-            border-radius: 8px;
         }
         .overlay {
             display: none;
@@ -194,28 +186,28 @@
     <!-- Schedule for Week 1 -->
     <div class="schedule" id="schedule1">
         <div class="header" contenteditable="true" id="header1">NAME</div>
-        <div class="day" id="monday1" onclick="openModal('monday1')">Monday <div class="events"></div></div>
-        <div class="day" id="tuesday1" onclick="openModal('tuesday1')">Tuesday <div class="events"></div></div>
-        <div class="day" id="wednesday1" onclick="openModal('wednesday1')">Wednesday <div class="events"></div></div>
-        <div class="day" id="thursday1" onclick="openModal('thursday1')">Thursday <div class="events"></div></div>
-        <div class="day" id="friday1" onclick="openModal('friday1')">Friday <div class="events"></div></div>
+        <div class="day" id="monday1" onmouseenter="expandDay('monday1')" onmouseleave="collapseDay('monday1')" onclick="openModal('monday1')">Monday <div class="events"></div></div>
+        <div class="day" id="tuesday1" onmouseenter="expandDay('tuesday1')" onmouseleave="collapseDay('tuesday1')" onclick="openModal('tuesday1')">Tuesday <div class="events"></div></div>
+        <div class="day" id="wednesday1" onmouseenter="expandDay('wednesday1')" onmouseleave="collapseDay('wednesday1')" onclick="openModal('wednesday1')">Wednesday <div class="events"></div></div>
+        <div class="day" id="thursday1" onmouseenter="expandDay('thursday1')" onmouseleave="collapseDay('thursday1')" onclick="openModal('thursday1')">Thursday <div class="events"></div></div>
+        <div class="day" id="friday1" onmouseenter="expandDay('friday1')" onmouseleave="collapseDay('friday1')" onclick="openModal('friday1')">Friday <div class="events"></div></div>
         <div class="color-change-btn">
             <button class="color-picker-button" id="colorPickerButton1">Change Color</button>
-            <input type="color" id="colorPicker1" value="#000000">
+            <input type="color" id="colorPicker1" style="display: none;">
         </div>
     </div>
 
     <!-- Schedule for Week 2 -->
     <div class="schedule" id="schedule2">
         <div class="header" contenteditable="true" id="header2">NAME</div>
-        <div class="day" id="monday2" onclick="openModal('monday2')">Monday <div class="events"></div></div>
-        <div class="day" id="tuesday2" onclick="openModal('tuesday2')">Tuesday <div class="events"></div></div>
-        <div class="day" id="wednesday2" onclick="openModal('wednesday2')">Wednesday <div class="events"></div></div>
-        <div class="day" id="thursday2" onclick="openModal('thursday2')">Thursday <div class="events"></div></div>
-        <div class="day" id="friday2" onclick="openModal('friday2')">Friday <div class="events"></div></div>
+        <div class="day" id="monday2" onmouseenter="expandDay('monday2')" onmouseleave="collapseDay('monday2')" onclick="openModal('monday2')">Monday <div class="events"></div></div>
+        <div class="day" id="tuesday2" onmouseenter="expandDay('tuesday2')" onmouseleave="collapseDay('tuesday2')" onclick="openModal('tuesday2')">Tuesday <div class="events"></div></div>
+        <div class="day" id="wednesday2" onmouseenter="expandDay('wednesday2')" onmouseleave="collapseDay('wednesday2')" onclick="openModal('wednesday2')">Wednesday <div class="events"></div></div>
+        <div class="day" id="thursday2" onmouseenter="expandDay('thursday2')" onmouseleave="collapseDay('thursday2')" onclick="openModal('thursday2')">Thursday <div class="events"></div></div>
+        <div class="day" id="friday2" onmouseenter="expandDay('friday2')" onmouseleave="collapseDay('friday2')" onclick="openModal('friday2')">Friday <div class="events"></div></div>
         <div class="color-change-btn">
             <button class="color-picker-button" id="colorPickerButton2">Change Color</button>
-            <input type="color" id="colorPicker2" value="#000000">
+            <input type="color" id="colorPicker2" style="display: none;">
         </div>
     </div>
 </div>
@@ -288,6 +280,7 @@
         // Set modal buttons to match the theme color
         document.querySelector('.add-event-btn').style.backgroundColor = themeColor;
         document.querySelector('.back-btn').style.backgroundColor = themeColor;
+        document.querySelector('.back-btn').style.border = "none"; // Remove border from back button
 
         if (eventsDiv.children.length === 0) {
             classList.innerHTML = '<p>No classes. Click Add to create one.</p>';
@@ -380,8 +373,21 @@
         submitBtn.style.backgroundColor = themeColor;
         submitBtn.style.borderColor = themeColor;
         backBtn.style.backgroundColor = themeColor;
-        backBtn.style.borderColor = themeColor;
+        backBtn.style.border = "none"; // Remove border from back button
     }
+
+    // Hover to expand a day and show its events
+    function expandDay(dayId) {
+        const dayElement = document.getElementById(dayId);
+        dayElement.classList.add("expanded");
+    }
+
+    // Collapse a day back to its original size
+    function collapseDay(dayId) {
+        const dayElement = document.getElementById(dayId);
+        dayElement.classList.remove("expanded");
+    }
+
 </script>
 
 </body>
