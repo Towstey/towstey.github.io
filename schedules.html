@@ -53,11 +53,13 @@
             overflow: hidden;
             margin-bottom: 10px;
             height: 50px;
+            max-height: 150px; /* Limit the height */
+            overflow-y: auto; /* Enable scrolling if contents exceed height */
         }
 
         .day:hover {
             height: 150px; /* Expand the day smoothly */
-            transition: height 0.5s ease; /* Smooth animation */
+            transition: height 0.5s ease;
         }
 
         .class-item-display {
@@ -255,7 +257,7 @@
 <div class="overlay" id="overlay"></div>
 
 <script>
-    let selectedDay = null; 
+    let selectedDay = null;
     let themeColor = { schedule1: '#000000', schedule2: '#000000' };
     let classes = JSON.parse(localStorage.getItem('classes')) || {};
     let names = JSON.parse(localStorage.getItem('names')) || { header1: 'NAME', header2: 'NAME' };
